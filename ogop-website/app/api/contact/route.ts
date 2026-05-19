@@ -1,29 +1,43 @@
-import { NextRequest, NextResponse } from 'next/server';
-import sql from '@/lib/db';
-import { isAuthenticated } from '@/lib/auth';
+import { NextRequest, NextResponse } from 'next/server'
+import { sql } from '@/lib/db'
+import { verifyToken } from '@/lib/auth'
 
-export async function POST(request: NextRequest) {
+// Submit contact form (public)
+export async function POST(req: NextRequest) {
   try {
-    const { name, email, message } = await request.json();
-    if (!name || !email || !message) {
-      return NextResponse.json({ error: 'All fields required' }, { status: 400 });
-    }
-    await sql`INSERT INTO contact_messages (name, email, message) VALUES (${name}, ${email}, ${message})`;
-    return NextResponse.json({ success: true });
+    const { name, email, subject, message } = await req.json()
+    
+    await sql`
+      INSERT INTO contact_messages (name, email, subject, message)
+      VALUES (${name}, ${email}, ${subject}, ${message})
+    `
+    
+    // Optional: Send email notification
+    // await sendEmailNotification({ name, email, subject, message })
+    
+    return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('POST /api/contact error:', error);
-    return NextResponse.json({ error: 'Failed to send message' }, { status: 500 });
+    return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }
 
-export async function GET(request: NextRequest) {
-  const user = isAuthenticated(request);
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+// Get messages (admin only)
+export async function GET(req: NextRequest) {
   try {
-    const messages = await sql`SELECT * FROM contact_messages ORDER BY created_at DESC`;
-    return NextResponse.json({ messages });
+    const token = req.headers.get('authorization')?.replace('Bearer ', '')
+    const decoded = verifyToken(token)
+    
+    if (!decoded) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    
+    const messages = await sql`
+      SELECT * FROM contact_messages 
+      ORDER BY created_at DESC
+    `
+    
+    return NextResponse.json(messages)
   } catch (error) {
-    console.error('GET /api/contact error:', error);
-    return NextResponse.json({ error: 'Failed to fetch messages' }, { status: 500 });
+    return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }
