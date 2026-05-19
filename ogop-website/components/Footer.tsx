@@ -1,48 +1,166 @@
-import { Heart } from "lucide-react";
+'use client'
 
-interface ContactContent {
-  address?: string;
-  phone?: string;
-  email?: string;
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
+
+interface SiteSettings {
+  siteTitle: string
+  contactEmail: string
+  contactPhone: string
+  address: string
+  socialMedia: {
+    facebook: string
+    instagram: string
+    twitter: string
+    whatsapp: string
+  }
 }
 
-export default function Footer({ contact }: { contact: ContactContent }) {
+export default function Footer() {
+  const [settings, setSettings] = useState<SiteSettings>({
+    siteTitle: 'One Girl One Promise',
+    contactEmail: 'onegirlonepromise@gmail.com',
+    contactPhone: '+265 983 711 922',
+    address: 'Mdeka, Malawi',
+    socialMedia: {
+      facebook: '#',
+      instagram: '#',
+      twitter: '#',
+      whatsapp: 'https://wa.me/265983711922'
+    }
+  })
+
+  useEffect(() => {
+    fetch('/api/content?type=settings')
+      .then(res => res.json())
+      .then(data => {
+        if (data && Object.keys(data).length > 0) {
+          setSettings(prev => ({ ...prev, ...data }))
+        }
+      })
+      .catch(console.error)
+  }, [])
+
   return (
-    <footer className="bg-gray-950 text-gray-400 py-12">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid md:grid-cols-3 gap-8 mb-8">
-          <div>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center text-white font-bold text-xs">OG</div>
-              <div>
-                <div className="text-white font-bold font-display">OGOP</div>
-                <div className="text-yellow-400 text-xs">Yes, I Can Become</div>
-              </div>
-            </div>
-            <p className="text-sm leading-relaxed">One Girl One Promise — restoring hope and opportunity to teenage mothers in Malawi.</p>
+    <footer className="footer">
+      <div className="container">
+        <div className="footer-grid">
+          <div className="footer-section">
+            <h3>{settings.siteTitle}</h3>
+            <p className="motto">"Yes, I Can Become"</p>
+            <p>Empowering teen mothers in Malawi through education, counselling, and skills development.</p>
           </div>
-          <div>
-            <h4 className="text-white font-semibold mb-4">Quick Links</h4>
-            <div className="flex flex-col gap-2 text-sm">
-              {["About", "Mission", "Programs", "Impact", "Contact"].map(l => (
-                <a key={l} href={`#${l.toLowerCase()}`} className="hover:text-yellow-400 transition">{l}</a>
-              ))}
-            </div>
+
+          <div className="footer-section">
+            <h4>Quick Links</h4>
+            <ul>
+              <li><Link href="/">Home</Link></li>
+              <li><Link href="/about">About</Link></li>
+              <li><Link href="/programs">Programs</Link></li>
+              <li><Link href="/impact">Impact</Link></li>
+              <li><Link href="/stories">Stories</Link></li>
+              <li><Link href="/contact">Contact</Link></li>
+            </ul>
           </div>
-          <div>
-            <h4 className="text-white font-semibold mb-4">Contact</h4>
-            <div className="flex flex-col gap-2 text-sm">
-              {contact.address && <span>{contact.address}</span>}
-              {contact.phone && <span>{contact.phone}</span>}
-              {contact.email && <a href={`mailto:${contact.email}`} className="hover:text-yellow-400 transition">{contact.email}</a>}
-            </div>
+
+          <div className="footer-section">
+            <h4>Get Involved</h4>
+            <ul>
+              <li><Link href="/donate">Donate</Link></li>
+              <li><Link href="/volunteer">Volunteer</Link></li>
+              <li><Link href="/partner">Partner With Us</Link></li>
+            </ul>
+          </div>
+
+          <div className="footer-section">
+            <h4>Contact Info</h4>
+            <ul className="contact-info">
+              <li><i className="fas fa-map-marker-alt"></i> {settings.address}</li>
+              <li><i className="fas fa-phone"></i> {settings.contactPhone}</li>
+              <li><i className="fas fa-envelope"></i> {settings.contactEmail}</li>
+            </ul>
           </div>
         </div>
-        <div className="border-t border-gray-800 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm">© {new Date().getFullYear()} One Girl One Promise. All rights reserved.</p>
-          <p className="text-sm flex items-center gap-1.5">Made with <Heart size={13} className="text-red-500" /> for the girls of Malawi</p>
+
+        <div className="footer-bottom">
+          <p>&copy; {new Date().getFullYear()} {settings.siteTitle}. All rights reserved.</p>
+          <p className="scripture">Based on Isaiah 61:7</p>
         </div>
       </div>
+
+      <style jsx>{`
+        .footer {
+          background: #1a1a2e;
+          color: #fff;
+          padding: 50px 0 20px;
+        }
+        .container {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 20px;
+        }
+        .footer-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 40px;
+          margin-bottom: 40px;
+        }
+        .footer-section h3, .footer-section h4 {
+          margin-bottom: 20px;
+          color: #E91E63;
+        }
+        .motto {
+          font-style: italic;
+          margin: 15px 0;
+          font-size: 1.1rem;
+        }
+        .footer-section ul {
+          list-style: none;
+          padding: 0;
+        }
+        .footer-section ul li {
+          margin-bottom: 10px;
+        }
+        .footer-section ul li a {
+          color: #ccc;
+          text-decoration: none;
+          transition: color 0.3s;
+        }
+        .footer-section ul li a:hover {
+          color: #E91E63;
+        }
+        .contact-info li {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 12px;
+          color: #ccc;
+        }
+        .contact-info li i {
+          color: #E91E63;
+          width: 20px;
+        }
+        .footer-bottom {
+          text-align: center;
+          padding-top: 30px;
+          border-top: 1px solid #333;
+          color: #888;
+        }
+        .scripture {
+          margin-top: 10px;
+          font-size: 0.9rem;
+          font-style: italic;
+        }
+        @media (max-width: 768px) {
+          .footer-grid {
+            grid-template-columns: 1fr;
+            text-align: center;
+          }
+          .contact-info li {
+            justify-content: center;
+          }
+        }
+      `}</style>
     </footer>
-  );
+  )
 }
