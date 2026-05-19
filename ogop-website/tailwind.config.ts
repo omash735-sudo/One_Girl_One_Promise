@@ -1,59 +1,37 @@
-import type { Config } from "tailwindcss";
-
-const config: Config = {
+/** @type {import('tailwindcss').Config} */
+module.exports = {
   content: [
-    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    './pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
       colors: {
-        primary: {
-          DEFAULT: "#7C3AED",
-          50: "#F5F3FF",
-          100: "#EDE9FE",
-          500: "#8B5CF6",
-          600: "#7C3AED",
-          700: "#6D28D9",
-          900: "#4C1D95",
-        },
-        gold: {
-          DEFAULT: "#D97706",
-          light: "#FCD34D",
-          dark: "#B45309",
-        },
-        warm: {
-          50: "#FFF7ED",
-          100: "#FFEDD5",
-          200: "#FED7AA",
-        }
+        primary: '#E91E63',
+        primaryDark: '#C2185B',
+        secondary: '#9C27B0',
+        accent: '#FF9800',
+        dark: '#2C3E50',
       },
       fontFamily: {
-        display: ["Georgia", "Cambria", "serif"],
-        body: ["'Trebuchet MS'", "Helvetica", "sans-serif"],
+        poppins: ['var(--font-poppins)'],
       },
       animation: {
-        "fade-in": "fadeIn 0.8s ease-out forwards",
-        "slide-up": "slideUp 0.6s ease-out forwards",
-        "float": "float 6s ease-in-out infinite",
+        'fade-up': 'fadeUp 0.8s ease-out',
+        'slow-zoom': 'slowZoom 20s ease-in-out infinite alternate',
       },
       keyframes: {
-        fadeIn: {
-          from: { opacity: "0" },
-          to: { opacity: "1" },
+        fadeUp: {
+          '0%': { opacity: '0', transform: 'translateY(30px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
         },
-        slideUp: {
-          from: { opacity: "0", transform: "translateY(30px)" },
-          to: { opacity: "1", transform: "translateY(0)" },
-        },
-        float: {
-          "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-10px)" },
+        slowZoom: {
+          '0%': { transform: 'scale(1)' },
+          '100%': { transform: 'scale(1.1)' },
         },
       },
     },
   },
   plugins: [],
-};
-export default config;
+}
