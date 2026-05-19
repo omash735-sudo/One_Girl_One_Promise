@@ -1,82 +1,141 @@
-"use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Eye, EyeOff, LogIn } from "lucide-react";
+'use client'
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function AdminLogin() {
-  const [form, setForm] = useState({ email: "", password: "" });
-  const [showPass, setShowPass] = useState(false);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const router = useRouter()
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+
     try {
-      const res = await fetch("/api/auth", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      if (res.ok) {
-        router.push("/admin/dashboard");
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, action: 'login' })
+      })
+
+      const data = await res.json()
+
+      if (data.success) {
+        localStorage.setItem('ogop_admin_token', data.token)
+        localStorage.setItem('ogop_admin_user', JSON.stringify(data.user))
+        router.push('/admin/dashboard')
       } else {
-        const data = await res.json();
-        setError(data.error || "Invalid credentials");
+        setError(data.error || 'Login failed')
       }
-    } catch {
-      setError("Connection error. Please try again.");
+    } catch (err) {
+      setError('Network error')
+    } finally {
+      setLoading(false)
     }
-    setLoading(false);
   }
 
   return (
-    <div className="min-h-screen hero-gradient flex items-center justify-center p-6">
-      <div className="bg-white rounded-3xl shadow-2xl p-10 w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center text-white font-bold text-xl mx-auto mb-4 shadow-lg">OG</div>
-          <h1 className="font-display text-2xl font-bold text-gray-900">Admin Panel</h1>
-          <p className="text-gray-400 text-sm mt-1">One Girl One Promise</p>
+    <div className="admin-login">
+      <div className="login-card">
+        <div className="login-header">
+          <img src="/logo.png" alt="OGOP" className="login-logo" />
+          <h2>Admin Login</h2>
+          <p>One Girl One Promise</p>
         </div>
-
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+        
+        <form onSubmit={handleLogin}>
+          <div className="form-group">
             <input
-              type="email" required value={form.email}
-              onChange={e => setForm({ ...form, email: e.target.value })}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100 transition"
-              placeholder="admin@ogop.org"
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
-            <div className="relative">
-              <input
-                type={showPass ? "text" : "password"} required value={form.password}
-                onChange={e => setForm({ ...form, password: e.target.value })}
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 pr-11 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100 transition"
-                placeholder="••••••••"
-              />
-              <button type="button" onClick={() => setShowPass(!showPass)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
+          
+          <div className="form-group">
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
           </div>
-          {error && <p className="text-red-500 text-sm bg-red-50 rounded-lg px-3 py-2">{error}</p>}
-          <button type="submit" disabled={loading}
-            className="w-full btn-primary justify-center py-3 rounded-xl disabled:opacity-60">
-            {loading ? "Signing in..." : <><LogIn size={16} /> Sign In</>}
+          
+          {error && <div className="error-message">{error}</div>}
+          
+          <button type="submit" disabled={loading}>
+            {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
-
-        <p className="text-center mt-6 text-xs text-gray-400">
-          <a href="/" className="text-purple-600 hover:underline">← Back to website</a>
-        </p>
       </div>
+
+      <style jsx>{`
+        .admin-login {
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: linear-gradient(135deg, #E91E63, #9C27B0);
+        }
+        .login-card {
+          background: white;
+          padding: 40px;
+          border-radius: 10px;
+          width: 100%;
+          max-width: 400px;
+          box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        .login-header {
+          text-align: center;
+          margin-bottom: 30px;
+        }
+        .login-logo {
+          width: 80px;
+          margin-bottom: 15px;
+        }
+        .login-header h2 {
+          color: #E91E63;
+          margin-bottom: 5px;
+        }
+        .form-group {
+          margin-bottom: 20px;
+        }
+        .form-group input {
+          width: 100%;
+          padding: 12px;
+          border: 1px solid #ddd;
+          border-radius: 5px;
+          font-size: 16px;
+        }
+        button {
+          width: 100%;
+          padding: 12px;
+          background: #E91E63;
+          color: white;
+          border: none;
+          border-radius: 5px;
+          font-size: 16px;
+          cursor: pointer;
+        }
+        button:hover {
+          background: #C2185B;
+        }
+        .error-message {
+          background: #ffebee;
+          color: #c62828;
+          padding: 10px;
+          border-radius: 5px;
+          margin-bottom: 20px;
+          text-align: center;
+        }
+      `}</style>
     </div>
-  );
+  )
 }
