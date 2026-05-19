@@ -196,4 +196,22 @@ export default function SuccessStories() {
         }
         .dot.active {
           background: #E91E63;
-          width: 30
+          width: 30px;
+          border-radius: 10px;
+        }
+        @media (max-width: 768px) {
+          .testimonial-card {
+            padding: 30px 20px;
+          }
+          .testimonial-text {
+            font-size: 1rem;
+          }
+          .slider-btn {
+            width: 35px;
+            height: 35px;
+          }
+        }
+      `}</style>
+    </section>
+  )
+}
