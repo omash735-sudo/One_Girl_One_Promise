@@ -1,61 +1,223 @@
-"use client";
-import { GraduationCap, Heart, Users, BookOpen, Star } from "lucide-react";
+'use client'
 
-const iconMap: Record<string, React.ElementType> = { GraduationCap, Heart, Users, BookOpen, Star };
+import { useEffect, useState } from 'react'
+import CountUp from 'react-countup'
+import { useInView } from 'react-intersection-observer'
 
-interface Stat { id: number; label: string; value: string; icon: string; }
-interface Story { id: number; name: string; story: string; year: number; }
+interface Stat {
+  id: number
+  number: number
+  label: string
+  suffix: string
+}
 
-export default function ImpactSection({ stats, stories }: { stats: Stat[]; stories: Story[] }) {
+interface ImpactData {
+  milestones: string[]
+  metrics: {
+    schoolReenrollment: number
+    mentalHealthImprovement: number
+    parentalSupport: number
+  }
+}
+
+export default function ImpactSection() {
+  const [stats, setStats] = useState<Stat[]>([])
+  const [impact, setImpact] = useState<ImpactData>({
+    milestones: [],
+    metrics: { schoolReenrollment: 0, mentalHealthImprovement: 0, parentalSupport: 0 }
+  })
+  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.3 })
+
+  useEffect(() => {
+    fetch('/api/content?type=stats')
+      .then(res => res.json())
+      .then(data => setStats(data))
+      .catch(console.error)
+    
+    fetch('/api/impact')
+      .then(res => res.json())
+      .then(data => setImpact(data))
+      .catch(console.error)
+  }, [])
+
   return (
-    <section id="impact" className="py-24 bg-gradient-to-br from-purple-900 via-purple-800 to-purple-950">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-16">
-          <div className="inline-block bg-yellow-400/20 text-yellow-300 border border-yellow-400/30 rounded-full px-4 py-1.5 text-sm font-semibold mb-4">
-            Our Impact
-          </div>
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-4">Transforming Lives</h2>
-          <p className="text-purple-300 max-w-xl mx-auto">Every number represents a real girl whose life has been changed forever.</p>
+    <section className="impact" id="impact" ref={ref}>
+      <div className="container">
+        <div className="section-header light">
+          <h2>Our <span className="highlight">Impact</span></h2>
+          <div className="underline light-underline"></div>
+          <p className="section-subtitle">Real change, measurable results</p>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
-          {stats.map((s) => {
-            const Icon = iconMap[s.icon] || Star;
-            return (
-              <div key={s.id} className="bg-white/10 backdrop-blur border border-white/20 rounded-3xl p-7 text-center card-hover">
-                <div className="w-14 h-14 rounded-full bg-yellow-400/20 border border-yellow-400/40 flex items-center justify-center mx-auto mb-5">
-                  <Icon size={24} className="text-yellow-400" />
-                </div>
-                <div className="font-display text-4xl font-bold text-white mb-2">{s.value}</div>
-                <div className="text-purple-300 text-sm leading-snug">{s.label}</div>
+        <div className="stats-grid">
+          {stats.map((stat) => (
+            <div key={stat.id} className="stat-card">
+              <div className="stat-number">
+                {inView && (
+                  <CountUp 
+                    start={0} 
+                    end={stat.number} 
+                    duration={2.5} 
+                    suffix={stat.suffix}
+                  />
+                )}
               </div>
-            );
-          })}
+              <div className="stat-label">{stat.label}</div>
+            </div>
+          ))}
         </div>
 
-        {stories.length > 0 && (
-          <>
-            <h3 className="font-display text-3xl font-bold text-white text-center mb-10">Success Stories</h3>
-            <div className="grid md:grid-cols-2 gap-6">
-              {stories.map((s) => (
-                <div key={s.id} className="bg-white/10 backdrop-blur border border-white/20 rounded-3xl p-8">
-                  <div className="text-yellow-400 text-4xl font-display font-bold mb-4">&ldquo;</div>
-                  <p className="text-purple-100 leading-relaxed mb-5">{s.story}</p>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-yellow-400/30 flex items-center justify-center text-yellow-300 font-bold">
-                      {s.name[0]}
-                    </div>
-                    <div>
-                      <div className="text-white font-semibold">{s.name}</div>
-                      {s.year && <div className="text-purple-400 text-xs">{s.year}</div>}
-                    </div>
-                  </div>
-                </div>
+        <div className="impact-grid">
+          <div className="milestones">
+            <h3>Key Milestones</h3>
+            <ul>
+              {impact.milestones.map((milestone, index) => (
+                <li key={index}>
+                  <i className="fas fa-check-circle"></i>
+                  {milestone}
+                </li>
               ))}
+            </ul>
+          </div>
+
+          <div className="metrics">
+            <h3>Success Metrics</h3>
+            <div className="metric-item">
+              <span>School Re-enrollment</span>
+              <div className="progress-bar">
+                <div 
+                  className="progress-fill" 
+                  style={{ width: `${impact.metrics.schoolReenrollment}%` }}
+                >
+                  {impact.metrics.schoolReenrollment}%
+                </div>
+              </div>
             </div>
-          </>
-        )}
+            <div className="metric-item">
+              <span>Mental Health Improvement</span>
+              <div className="progress-bar">
+                <div 
+                  className="progress-fill" 
+                  style={{ width: `${impact.metrics.mentalHealthImprovement}%` }}
+                >
+                  {impact.metrics.mentalHealthImprovement}%
+                </div>
+              </div>
+            </div>
+            <div className="metric-item">
+              <span>Parental Support</span>
+              <div className="progress-bar">
+                <div 
+                  className="progress-fill" 
+                  style={{ width: `${impact.metrics.parentalSupport}%` }}
+                >
+                  {impact.metrics.parentalSupport}%
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+
+      <style jsx>{`
+        .impact {
+          padding: 80px 0;
+          background: linear-gradient(135deg, #2C3E50, #1a252f);
+          color: white;
+        }
+        .container {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 20px;
+        }
+        .section-header {
+          text-align: center;
+          margin-bottom: 50px;
+        }
+        .section-header h2 {
+          font-size: 2.5rem;
+          color: white;
+        }
+        .highlight {
+          color: #E91E63;
+        }
+        .underline {
+          width: 60px;
+          height: 3px;
+          background: #E91E63;
+          margin: 15px auto;
+        }
+        .section-subtitle {
+          color: #ccc;
+          font-size: 1.1rem;
+        }
+        .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 30px;
+          margin-bottom: 60px;
+        }
+        .stat-card {
+          text-align: center;
+          padding: 30px;
+          background: rgba(255,255,255,0.1);
+          border-radius: 15px;
+          backdrop-filter: blur(10px);
+        }
+        .stat-number {
+          font-size: 3rem;
+          font-weight: bold;
+          color: #E91E63;
+          margin-bottom: 10px;
+        }
+        .impact-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 40px;
+        }
+        .milestones ul {
+          list-style: none;
+          padding: 0;
+        }
+        .milestones li {
+          margin-bottom: 15px;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+        .milestones li i {
+          color: #4CAF50;
+          font-size: 1.2rem;
+        }
+        .metric-item {
+          margin-bottom: 20px;
+        }
+        .metric-item span {
+          display: block;
+          margin-bottom: 8px;
+        }
+        .progress-bar {
+          background: rgba(255,255,255,0.2);
+          border-radius: 10px;
+          overflow: hidden;
+          height: 35px;
+        }
+        .progress-fill {
+          background: #E91E63;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          padding-right: 10px;
+          font-size: 0.9rem;
+          font-weight: bold;
+        }
+        @media (max-width: 768px) {
+          .impact-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
     </section>
-  );
+  )
 }
