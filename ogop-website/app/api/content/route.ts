@@ -1,41 +1,87 @@
-import { NextRequest, NextResponse } from 'next/server';
-import sql from '@/lib/db';
-import { isAuthenticated } from '@/lib/auth';
+import { NextRequest, NextResponse } from 'next/server'
+import { sql } from '@/lib/db'
+import { verifyToken } from '@/lib/auth'
 
-export async function GET() {
+// GET all content
+export async function GET(req: NextRequest) {
   try {
-    const content = await sql`SELECT section, content FROM site_content`;
-    const stats = await sql`SELECT * FROM impact_stats ORDER BY sort_order`;
-    const programs = await sql`SELECT * FROM programs WHERE active = true ORDER BY sort_order`;
-    const stories = await sql`SELECT * FROM success_stories WHERE active = true ORDER BY id DESC`;
-
-    const contentMap: Record<string, unknown> = {};
-    content.forEach((row: { section: string; content: unknown }) => { 
-      contentMap[row.section] = row.content; 
-    });
-
-    return NextResponse.json({ content: contentMap, stats, programs, stories });
+    const { searchParams } = new URL(req.url)
+    const type = searchParams.get('type')
+    
+    if (type === 'hero') {
+      const hero = await sql`SELECT * FROM hero_content ORDER BY id DESC LIMIT 1`
+      return NextResponse.json(hero[0] || {})
+    }
+    
+    if (type === 'about') {
+      const about = await sql`SELECT * FROM about_content ORDER BY id DESC LIMIT 1`
+      const values = await sql`SELECT * FROM core_values WHERE is_active = true ORDER BY display_order`
+      return NextResponse.json({ about: about[0] || {}, values })
+    }
+    
+    if (type === 'stats') {
+      const stats = await sql`SELECT * FROM stats WHERE is_active = true ORDER BY display_order`
+      return NextResponse.json(stats)
+    }
+    
+    if (type === 'settings') {
+      const settings = await sql`SELECT * FROM site_settings`
+      const settingsObj: any = {}
+      settings.forEach(s => { settingsObj[s.key] = s.value })
+      return NextResponse.json(settingsObj)
+    }
+    
+    return NextResponse.json({ error: 'Invalid type' }, { status: 400 })
+    
   } catch (error) {
-    console.error('GET /api/content error:', error);
-    return NextResponse.json({ error: 'Failed to fetch content' }, { status: 500 });
+    console.error('GET content error:', error)
+    return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }
 
-export async function PUT(request: NextRequest) {
-  const user = isAuthenticated(request);
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
+// UPDATE content (requires admin)
+export async function PUT(req: NextRequest) {
   try {
-    const body = await request.json();
-    const { section, content } = body;
-    await sql`
-      INSERT INTO site_content (section, content, updated_at)
-      VALUES (${section}, ${JSON.stringify(content)}, NOW())
-      ON CONFLICT (section) DO UPDATE SET content = ${JSON.stringify(content)}, updated_at = NOW()
-    `;
-    return NextResponse.json({ success: true });
+    const token = req.headers.get('authorization')?.replace('Bearer ', '')
+    const decoded = verifyToken(token)
+    
+    if (!decoded) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    
+    const { type, data } = await req.json()
+    
+    if (type === 'hero') {
+      await sql`
+        INSERT INTO hero_content (title, subtitle, button1_text, button1_link, button2_text, button2_link, background_image)
+        VALUES (${data.title}, ${data.subtitle}, ${data.button1Text}, ${data.button1Link}, ${data.button2Text}, ${data.button2Link}, ${data.backgroundImage})
+      `
+      return NextResponse.json({ success: true })
+    }
+    
+    if (type === 'about') {
+      await sql`
+        INSERT INTO about_content (scripture, description, vision, mission)
+        VALUES (${data.scripture}, ${data.description}, ${data.vision}, ${data.mission})
+      `
+      return NextResponse.json({ success: true })
+    }
+    
+    if (type === 'settings') {
+      for (const [key, value] of Object.entries(data)) {
+        await sql`
+          INSERT INTO site_settings (key, value)
+          VALUES (${key}, ${value})
+          ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = CURRENT_TIMESTAMP
+        `
+      }
+      return NextResponse.json({ success: true })
+    }
+    
+    return NextResponse.json({ error: 'Invalid type' }, { status: 400 })
+    
   } catch (error) {
-    console.error('PUT /api/content error:', error);
-    return NextResponse.json({ error: 'Failed to update content' }, { status: 500 });
+    console.error('UPDATE content error:', error)
+    return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }
