@@ -1,62 +1,227 @@
-"use client";
+'use client'
+
+import { useEffect, useState } from 'react'
 
 interface AboutContent {
-  title?: string;
-  description?: string;
-  scripture?: string;
-  scripture_ref?: string;
-  founder_name?: string;
-  founder_title?: string;
-  founder_bio?: string;
+  scripture: string
+  description: string
+  vision: string
+  mission: string
 }
 
-export default function AboutSection({ content }: { content: AboutContent }) {
-  return (
-    <section id="about" className="py-24 bg-white">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid md:grid-cols-2 gap-16 items-center">
-          <div>
-            <div className="inline-block bg-purple-100 text-purple-700 rounded-full px-4 py-1.5 text-sm font-semibold mb-6">
-              Who We Are
-            </div>
-            <h2 className="font-display text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
-              {content.title || "About OGOP"}
-            </h2>
-            <p className="text-gray-600 text-lg leading-relaxed mb-8">
-              {content.description}
-            </p>
+interface CoreValue {
+  id: number
+  icon: string
+  title: string
+  description: string
+}
 
-            <div className="bg-gradient-to-br from-purple-50 to-yellow-50 rounded-2xl p-6 border-l-4 border-yellow-500">
-              <p className="text-gray-700 italic text-lg leading-relaxed mb-3">
-                &ldquo;{content.scripture}&rdquo;
-              </p>
-              <p className="text-purple-700 font-semibold text-sm">— {content.scripture_ref}</p>
+export default function AboutSection() {
+  const [about, setAbout] = useState<AboutContent>({
+    scripture: '',
+    description: '',
+    vision: '',
+    mission: ''
+  })
+  const [coreValues, setCoreValues] = useState<CoreValue[]>([])
+
+  useEffect(() => {
+    fetch('/api/content?type=about')
+      .then(res => res.json())
+      .then(data => {
+        setAbout(data.about || {})
+        setCoreValues(data.values || [])
+      })
+      .catch(console.error)
+  }, [])
+
+  return (
+    <section className="about" id="about">
+      <div className="container">
+        <div className="section-header">
+          <h2>About <span className="highlight">OGOP</span></h2>
+          <div className="underline"></div>
+          <p className="section-subtitle">One Girl One Promise - Transforming lives through education and compassion</p>
+        </div>
+
+        <div className="about-grid">
+          <div className="about-text">
+            {about.scripture && (
+              <div className="scripture-box">
+                <i className="fas fa-bible"></i>
+                <p>"{about.scripture}"</p>
+              </div>
+            )}
+            <p className="description">{about.description}</p>
+            
+            <div className="mission-vision">
+              <div className="card">
+                <i className="fas fa-eye"></i>
+                <h3>Our Vision</h3>
+                <p>{about.vision}</p>
+              </div>
+              <div className="card">
+                <i className="fas fa-bullseye"></i>
+                <h3>Our Mission</h3>
+                <p>{about.mission}</p>
+              </div>
             </div>
           </div>
 
-          <div className="space-y-6">
-            <div className="bg-gradient-to-br from-purple-900 to-purple-700 rounded-3xl p-8 text-white">
-              <div className="w-16 h-16 rounded-full bg-yellow-400/20 border border-yellow-400/40 flex items-center justify-center mb-5 text-2xl font-bold text-yellow-300 font-display">
-                {(content.founder_name || "GS").split(" ").map(n => n[0]).join("")}
-              </div>
-              <h3 className="font-display text-2xl font-bold mb-1">{content.founder_name || "Gift Sibale"}</h3>
-              <p className="text-yellow-300 text-sm font-medium mb-4">{content.founder_title || "Founder & Country Director"}</p>
-              <p className="text-purple-200 leading-relaxed">{content.founder_bio}</p>
-            </div>
+          <div className="about-image">
+            <img 
+              src="/assets/about-image.jpg" 
+              alt="Teen mothers being empowered"
+              onError={(e) => {
+                e.currentTarget.src = 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'
+              }}
+            />
+          </div>
+        </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-purple-50 rounded-2xl p-5 text-center">
-                <div className="text-3xl font-bold text-purple-700 font-display">2023</div>
-                <div className="text-gray-500 text-sm mt-1">Founded</div>
+        <div className="core-values">
+          <h3>Our Core Values</h3>
+          <div className="values-grid">
+            {coreValues.map((value) => (
+              <div key={value.id} className="value-card">
+                <i className={`fas ${value.icon}`}></i>
+                <h4>{value.title}</h4>
+                <p>{value.description}</p>
               </div>
-              <div className="bg-yellow-50 rounded-2xl p-5 text-center">
-                <div className="text-3xl font-bold text-yellow-600 font-display">Malawi</div>
-                <div className="text-gray-500 text-sm mt-1">Based In</div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+        .about {
+          padding: 80px 0;
+          background: #f9f9f9;
+        }
+        .container {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 20px;
+        }
+        .section-header {
+          text-align: center;
+          margin-bottom: 50px;
+        }
+        .section-header h2 {
+          font-size: 2.5rem;
+          color: #333;
+        }
+        .highlight {
+          color: #E91E63;
+        }
+        .underline {
+          width: 60px;
+          height: 3px;
+          background: #E91E63;
+          margin: 15px auto;
+        }
+        .section-subtitle {
+          color: #666;
+          font-size: 1.1rem;
+        }
+        .about-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 50px;
+          margin-bottom: 60px;
+        }
+        .scripture-box {
+          background: linear-gradient(135deg, #E91E63, #9C27B0);
+          color: white;
+          padding: 20px;
+          border-radius: 15px;
+          margin-bottom: 25px;
+          text-align: center;
+        }
+        .scripture-box i {
+          font-size: 2rem;
+          margin-bottom: 10px;
+        }
+        .scripture-box p {
+          font-style: italic;
+          font-size: 1.1rem;
+        }
+        .description {
+          line-height: 1.8;
+          color: #555;
+          margin-bottom: 30px;
+        }
+        .mission-vision {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 20px;
+        }
+        .mission-vision .card {
+          background: white;
+          padding: 20px;
+          border-radius: 10px;
+          box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+          transition: transform 0.3s;
+        }
+        .mission-vision .card:hover {
+          transform: translateY(-5px);
+        }
+        .mission-vision .card i {
+          font-size: 2rem;
+          color: #E91E63;
+          margin-bottom: 15px;
+        }
+        .mission-vision .card h3 {
+          margin-bottom: 10px;
+          color: #333;
+        }
+        .about-image img {
+          width: 100%;
+          border-radius: 15px;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .core-values {
+          margin-top: 40px;
+        }
+        .core-values h3 {
+          text-align: center;
+          font-size: 2rem;
+          margin-bottom: 40px;
+        }
+        .values-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 30px;
+        }
+        .value-card {
+          text-align: center;
+          padding: 30px;
+          background: white;
+          border-radius: 10px;
+          transition: all 0.3s;
+        }
+        .value-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .value-card i {
+          font-size: 2.5rem;
+          color: #E91E63;
+          margin-bottom: 15px;
+        }
+        .value-card h4 {
+          margin-bottom: 10px;
+          color: #333;
+        }
+        @media (max-width: 768px) {
+          .about-grid {
+            grid-template-columns: 1fr;
+          }
+          .mission-vision {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
     </section>
-  );
+  )
 }
