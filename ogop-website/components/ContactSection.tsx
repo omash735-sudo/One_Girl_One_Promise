@@ -1,127 +1,279 @@
-"use client";
-import { useState } from "react";
-import { MapPin, Phone, Mail, Send, CheckCircle } from "lucide-react";
+'use client'
 
-interface ContactContent {
-  address?: string;
-  phone?: string;
-  email?: string;
-  social_facebook?: string;
-  social_twitter?: string;
-  social_instagram?: string;
-}
+import { useState } from 'react'
 
-export default function ContactSection({ content }: { content: ContactContent }) {
-  const [form, setForm] = useState({ name: "", email: "", message: "" });
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+export default function ContactSection() {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  })
+  const [submitting, setSubmitting] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState('')
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setStatus("loading");
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSubmitting(true)
+    setError('')
+
     try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      })
+
       if (res.ok) {
-        setStatus("success");
-        setForm({ name: "", email: "", message: "" });
-      } else setStatus("error");
-    } catch {
-      setStatus("error");
+        setSubmitted(true)
+        setFormData({ name: '', email: '', subject: '', message: '' })
+        setTimeout(() => setSubmitted(false), 5000)
+      } else {
+        setError('Something went wrong. Please try again.')
+      }
+    } catch (err) {
+      setError('Network error. Please try again.')
+    } finally {
+      setSubmitting(false)
     }
   }
 
   return (
-    <section id="contact" className="py-24 bg-white">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-16">
-          <div className="inline-block bg-yellow-100 text-yellow-700 rounded-full px-4 py-1.5 text-sm font-semibold mb-4">Get In Touch</div>
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-gray-900 mb-4">Contact Us</h2>
-          <p className="text-gray-500 max-w-lg mx-auto">Whether you want to donate, volunteer, or partner — we&apos;d love to hear from you.</p>
+    <section className="contact" id="contact">
+      <div className="container">
+        <div className="section-header">
+          <h2>Get In <span className="highlight">Touch</span></h2>
+          <div className="underline"></div>
+          <p className="section-subtitle">We'd love to hear from you</p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-12 items-start max-w-5xl mx-auto">
-          <div>
-            <h3 className="font-display text-2xl font-bold text-gray-900 mb-8">Reach Out</h3>
-            <div className="space-y-6">
-              {[
-                { icon: MapPin, label: "Address", value: content.address },
-                { icon: Phone, label: "Phone", value: content.phone },
-                { icon: Mail, label: "Email", value: content.email },
-              ].map(({ icon: Icon, label, value }) => value && (
-                <div key={label} className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-purple-100 flex items-center justify-center shrink-0">
-                    <Icon size={20} className="text-purple-600" />
-                  </div>
-                  <div>
-                    <div className="text-sm text-gray-400 font-medium">{label}</div>
-                    <div className="text-gray-800 font-semibold">{value}</div>
-                  </div>
-                </div>
-              ))}
+        <div className="contact-grid">
+          <div className="contact-info">
+            <div className="info-card">
+              <i className="fas fa-map-marker-alt"></i>
+              <div>
+                <h4>Visit Us</h4>
+                <p>Mdeka, Malawi</p>
+              </div>
             </div>
-
-            <div className="mt-10 bg-gradient-to-br from-purple-900 to-purple-700 rounded-3xl p-7 text-white">
-              <h4 className="font-display text-xl font-bold mb-3">Support Our Mission</h4>
-              <p className="text-purple-200 text-sm leading-relaxed">
-                Your donation can change a girl&apos;s life. Every contribution helps us pay school fees, provide counselling, and build a brighter future for teen mothers in Malawi.
-              </p>
-              <div className="mt-4 inline-block bg-yellow-400 text-purple-900 font-bold px-5 py-2.5 rounded-full text-sm cursor-pointer hover:bg-yellow-300 transition">
-                Make a Donation →
+            <div className="info-card">
+              <i className="fas fa-phone"></i>
+              <div>
+                <h4>Call Us</h4>
+                <p>+265 983 711 922</p>
+              </div>
+            </div>
+            <div className="info-card">
+              <i className="fas fa-envelope"></i>
+              <div>
+                <h4>Email Us</h4>
+                <p>onegirlonepromise@gmail.com</p>
+              </div>
+            </div>
+            <div className="social-media">
+              <h4>Follow Us</h4>
+              <div className="social-icons">
+                <a href="#" target="_blank"><i className="fab fa-facebook-f"></i></a>
+                <a href="#" target="_blank"><i className="fab fa-instagram"></i></a>
+                <a href="#" target="_blank"><i className="fab fa-twitter"></i></a>
+                <a href="https://wa.me/265983711922" target="_blank"><i className="fab fa-whatsapp"></i></a>
               </div>
             </div>
           </div>
 
-          <div className="bg-gray-50 rounded-3xl p-8">
-            <h3 className="font-display text-2xl font-bold text-gray-900 mb-6">Send a Message</h3>
-            {status === "success" ? (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <CheckCircle size={48} className="text-green-500 mb-4" />
-                <h4 className="text-xl font-bold text-gray-900 mb-2">Message Sent!</h4>
-                <p className="text-gray-500">Thank you for reaching out. We&apos;ll get back to you soon.</p>
-                <button onClick={() => setStatus("idle")} className="mt-6 text-purple-600 font-medium hover:underline">Send another message</button>
+          <div className="contact-form">
+            <form onSubmit={handleSubmit}>
+              <div className="form-row">
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Your Name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Your Email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
               </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Your Name</label>
-                  <input
-                    type="text" required value={form.name}
-                    onChange={e => setForm({ ...form, name: e.target.value })}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100 transition"
-                    placeholder="Jane Doe"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                  <input
-                    type="email" required value={form.email}
-                    onChange={e => setForm({ ...form, email: e.target.value })}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100 transition"
-                    placeholder="jane@example.com"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
-                  <textarea
-                    required rows={5} value={form.message}
-                    onChange={e => setForm({ ...form, message: e.target.value })}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100 transition resize-none"
-                    placeholder="How can we help or collaborate?"
-                  />
-                </div>
-                {status === "error" && <p className="text-red-500 text-sm">Something went wrong. Please try again.</p>}
-                <button type="submit" disabled={status === "loading"}
-                  className="w-full btn-primary justify-center py-3 rounded-xl disabled:opacity-60">
-                  {status === "loading" ? "Sending..." : <><Send size={16} /> Send Message</>}
-                </button>
-              </form>
-            )}
+              <input
+                type="text"
+                name="subject"
+                placeholder="Subject"
+                value={formData.subject}
+                onChange={handleChange}
+              />
+              <textarea
+                name="message"
+                rows={5}
+                placeholder="Your Message"
+                value={formData.message}
+                onChange={handleChange}
+                required
+              ></textarea>
+              <button type="submit" disabled={submitting}>
+                {submitting ? 'Sending...' : 'Send Message'}
+              </button>
+              {submitted && <div className="success-message">Message sent successfully!</div>}
+              {error && <div className="error-message">{error}</div>}
+            </form>
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+        .contact {
+          padding: 80px 0;
+          background: #f9f9f9;
+        }
+        .container {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 20px;
+        }
+        .section-header {
+          text-align: center;
+          margin-bottom: 50px;
+        }
+        .section-header h2 {
+          font-size: 2.5rem;
+          color: #333;
+        }
+        .highlight {
+          color: #E91E63;
+        }
+        .underline {
+          width: 60px;
+          height: 3px;
+          background: #E91E63;
+          margin: 15px auto;
+        }
+        .section-subtitle {
+          color: #666;
+          font-size: 1.1rem;
+        }
+        .contact-grid {
+          display: grid;
+          grid-template-columns: 1fr 2fr;
+          gap: 40px;
+        }
+        .info-card {
+          display: flex;
+          align-items: center;
+          gap: 15px;
+          padding: 20px;
+          background: white;
+          border-radius: 10px;
+          margin-bottom: 20px;
+          transition: transform 0.3s;
+        }
+        .info-card:hover {
+          transform: translateX(5px);
+        }
+        .info-card i {
+          font-size: 1.8rem;
+          color: #E91E63;
+        }
+        .info-card h4 {
+          margin-bottom: 5px;
+          color: #333;
+        }
+        .social-media {
+          margin-top: 30px;
+          text-align: center;
+        }
+        .social-icons {
+          display: flex;
+          gap: 15px;
+          justify-content: center;
+          margin-top: 15px;
+        }
+        .social-icons a {
+          width: 40px;
+          height: 40px;
+          background: #E91E63;
+          color: white;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.3s;
+        }
+        .social-icons a:hover {
+          background: #C2185B;
+          transform: translateY(-3px);
+        }
+        .contact-form form {
+          background: white;
+          padding: 30px;
+          border-radius: 15px;
+          box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        }
+        .form-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 15px;
+        }
+        input, textarea {
+          width: 100%;
+          padding: 12px;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          margin-bottom: 15px;
+          font-size: 1rem;
+        }
+        textarea {
+          resize: vertical;
+        }
+        button {
+          background: #E91E63;
+          color: white;
+          padding: 12px 30px;
+          border: none;
+          border-radius: 30px;
+          font-size: 1rem;
+          cursor: pointer;
+          transition: all 0.3s;
+        }
+        button:hover {
+          background: #C2185B;
+          transform: translateY(-2px);
+        }
+        .success-message {
+          background: #4CAF50;
+          color: white;
+          padding: 10px;
+          border-radius: 5px;
+          margin-top: 15px;
+          text-align: center;
+        }
+        .error-message {
+          background: #f44336;
+          color: white;
+          padding: 10px;
+          border-radius: 5px;
+          margin-top: 15px;
+          text-align: center;
+        }
+        @media (max-width: 768px) {
+          .contact-grid {
+            grid-template-columns: 1fr;
+          }
+          .form-row {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
     </section>
-  );
+  )
 }
