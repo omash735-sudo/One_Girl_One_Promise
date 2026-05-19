@@ -373,4 +373,237 @@ export default function AdminDashboard() {
                   placeholder="Long Description"
                   rows={3}
                   value={newProgram.longDescription}
-                  onChange={(e) => setNewProgram({...
+                  onChange={(e) => setNewProgram({...newProgram, longDescription: e.target.value})}
+                />
+              </div>
+              <button onClick={addProgram} className="add-btn">Add Program</button>
+            </div>
+
+            <div className="items-list">
+              <h3>Existing Programs</h3>
+              {programs.map((program: any) => (
+                <div key={program.id} className="list-item">
+                  <div>
+                    <strong>{program.title}</strong>
+                    <p>{program.description}</p>
+                  </div>
+                  <button onClick={() => deleteProgram(program.id)} className="delete-btn">
+                    <i className="fas fa-trash"></i>
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Stories Tab */}
+        {activeTab === 'stories' && (
+          <div className="admin-section">
+            <h2>Success Stories</h2>
+            
+            <div className="add-form">
+              <h3>Add New Story</h3>
+              <div className="form-group">
+                <input 
+                  placeholder="Name"
+                  value={newStory.name}
+                  onChange={(e) => setNewStory({...newStory, name: e.target.value})}
+                />
+              </div>
+              <div className="form-group">
+                <input 
+                  type="number"
+                  placeholder="Age"
+                  value={newStory.age}
+                  onChange={(e) => setNewStory({...newStory, age: e.target.value})}
+                />
+              </div>
+              <div className="form-group">
+                <textarea 
+                  placeholder="Their Story"
+                  rows={3}
+                  value={newStory.story}
+                  onChange={(e) => setNewStory({...newStory, story: e.target.value})}
+                />
+              </div>
+              <div className="form-group">
+                <input 
+                  placeholder="Achievement"
+                  value={newStory.achievement}
+                  onChange={(e) => setNewStory({...newStory, achievement: e.target.value})}
+                />
+              </div>
+              <button onClick={addStory} className="add-btn">Add Story</button>
+            </div>
+
+            <div className="items-list">
+              <h3>Existing Stories</h3>
+              {stories.map((story: any) => (
+                <div key={story.id} className="list-item">
+                  <div>
+                    <strong>{story.name}, {story.age}</strong>
+                    <p>{story.story.substring(0, 100)}...</p>
+                    <small>Achievement: {story.achievement}</small>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Messages Tab */}
+        {activeTab === 'messages' && (
+          <div className="admin-section">
+            <h2>Contact Messages</h2>
+            {messages.length === 0 ? (
+              <p>No messages yet</p>
+            ) : (
+              messages.map((msg: any) => (
+                <div key={msg.id} className="message-card">
+                  <div className="message-header">
+                    <strong>{msg.name}</strong> ({msg.email})
+                    <small>{new Date(msg.created_at).toLocaleDateString()}</small>
+                  </div>
+                  <div className="message-subject">{msg.subject}</div>
+                  <div className="message-body">{msg.message}</div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+      </div>
+
+      <style jsx>{`
+        .admin-dashboard {
+          display: flex;
+          min-height: 100vh;
+        }
+        .admin-sidebar {
+          width: 280px;
+          background: #2C3E50;
+          color: white;
+          position: fixed;
+          height: 100vh;
+          overflow-y: auto;
+        }
+        .admin-logo {
+          padding: 20px;
+          border-bottom: 1px solid #34495e;
+          text-align: center;
+        }
+        .admin-sidebar nav button {
+          width: 100%;
+          padding: 15px 20px;
+          background: none;
+          border: none;
+          color: white;
+          text-align: left;
+          cursor: pointer;
+          font-size: 16px;
+          transition: all 0.3s;
+        }
+        .admin-sidebar nav button:hover,
+        .admin-sidebar nav button.active {
+          background: #E91E63;
+        }
+        .logout-btn {
+          position: absolute;
+          bottom: 20px;
+          width: calc(100% - 40px);
+          margin: 0 20px;
+          padding: 12px;
+          background: #c0392b;
+          color: white;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+        }
+        .admin-content {
+          margin-left: 280px;
+          padding: 30px;
+          width: calc(100% - 280px);
+        }
+        .admin-section {
+          background: white;
+          padding: 25px;
+          border-radius: 10px;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+          margin-bottom: 20px;
+        }
+        .form-group label {
+          display: block;
+          margin-bottom: 8px;
+          font-weight: 500;
+        }
+        .form-group input,
+        .form-group textarea {
+          width: 100%;
+          padding: 10px;
+          border: 1px solid #ddd;
+          border-radius: 5px;
+        }
+        .form-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 20px;
+        }
+        .save-btn, .add-btn {
+          background: #E91E63;
+          color: white;
+          padding: 10px 20px;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+        }
+        .add-form {
+          background: #f8f9fa;
+          padding: 20px;
+          border-radius: 10px;
+          margin-bottom: 30px;
+        }
+        .items-list {
+          margin-top: 20px;
+        }
+        .list-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 15px;
+          border-bottom: 1px solid #eee;
+        }
+        .delete-btn {
+          background: #e74c3c;
+          color: white;
+          border: none;
+          padding: 5px 10px;
+          border-radius: 5px;
+          cursor: pointer;
+        }
+        .message-card {
+          background: #f8f9fa;
+          padding: 15px;
+          border-radius: 8px;
+          margin-bottom: 15px;
+        }
+        .message-header {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 10px;
+        }
+        .message-subject {
+          font-weight: bold;
+          margin-bottom: 10px;
+        }
+        .admin-loading {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          font-size: 18px;
+        }
+      `}</style>
+    </div>
+  )
+}
