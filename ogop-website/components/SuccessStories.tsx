@@ -12,13 +12,18 @@ interface Story {
 }
 
 export default function SuccessStories() {
-  const [stories, setStories] = useState<Story[]>([])
+  const [stories, setStories] = useState<Story[]>([
+    { id: 1, name: 'Grace', age: 18, story: 'After completing our program, I returned to school and am now in Form Four. I have hope for my future and my child\'s future.', achievement: 'Returned to School', image: '' },
+    { id: 2, name: 'Chifundo', age: 17, story: 'The counselling and support I received helped me heal and believe in myself again. I am now running my own small business.', achievement: 'Small Business Owner', image: '' },
+  ])
   const [currentIndex, setCurrentIndex] = useState(0)
 
   useEffect(() => {
     fetch('/api/stories')
       .then(res => res.json())
-      .then(data => setStories(data))
+      .then(data => {
+        if (data.length > 0) setStories(data)
+      })
       .catch(console.error)
   }, [])
 
@@ -35,183 +40,61 @@ export default function SuccessStories() {
   const story = stories[currentIndex]
 
   return (
-    <section className="stories">
-      <div className="container">
-        <div className="section-header">
-          <h2>Success <span className="highlight">Stories</span></h2>
-          <div className="underline"></div>
-          <p className="section-subtitle">Real lives transformed through OGOP</p>
+    <section className="py-16 md:py-20 bg-[#F8F9FA]" id="stories">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-[#1A1A1A]">
+            Success <span className="text-[#003A99]">Stories</span>
+          </h2>
+          <div className="w-16 h-1 bg-[#003A99] mx-auto mt-4 mb-4" />
+          <p className="text-[#4A4F59] max-w-2xl mx-auto">Real lives transformed through OGOP</p>
         </div>
 
-        <div className="testimonial-slider">
-          <button onClick={prevStory} className="slider-btn prev">
-            <i className="fas fa-chevron-left"></i>
-          </button>
-
-          <div className="testimonial-card">
-            <div className="quote-icon">"</div>
-            <p className="testimonial-text">{story.story}</p>
-            <div className="author-info">
-              <img 
-                src={story.image || '/assets/default-avatar.png'} 
-                alt={story.name}
-                onError={(e) => e.currentTarget.src = '/assets/default-avatar.png'}
-              />
+        <div className="relative max-w-4xl mx-auto">
+          <div className="border border-[#E0E2E6] p-8 md:p-12 bg-white relative">
+            <div className="text-6xl text-[#003A99] opacity-20 absolute top-4 left-6 font-serif">"</div>
+            <p className="text-lg md:text-xl text-[#1A1A1A] leading-relaxed mb-8 italic pl-4">
+              {story.story}
+            </p>
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 bg-[#003A99] flex items-center justify-center text-white text-2xl font-bold">
+                {story.name.charAt(0)}
+              </div>
               <div>
-                <h4>{story.name}, {story.age}</h4>
-                <p className="achievement">{story.achievement}</p>
+                <h4 className="font-bold text-[#1A1A1A]">{story.name}, {story.age}</h4>
+                <p className="text-[#1A7F00] font-medium text-sm">{story.achievement}</p>
               </div>
             </div>
           </div>
 
-          <button onClick={nextStory} className="slider-btn next">
-            <i className="fas fa-chevron-right"></i>
-          </button>
-        </div>
-
-        <div className="dots">
-          {stories.map((_, index) => (
+          <div className="flex justify-center gap-4 mt-6">
             <button
-              key={index}
-              className={`dot ${index === currentIndex ? 'active' : ''}`}
-              onClick={() => setCurrentIndex(index)}
-            />
-          ))}
+              onClick={prevStory}
+              className="bg-[#1A7F00] text-white px-4 py-2 hover:bg-[#136000] transition-colors"
+            >
+              ← Prev
+            </button>
+            <button
+              onClick={nextStory}
+              className="bg-[#1A7F00] text-white px-4 py-2 hover:bg-[#136000] transition-colors"
+            >
+              Next →
+            </button>
+          </div>
+
+          <div className="flex justify-center gap-2 mt-4">
+            {stories.map((_, index) => (
+              <button
+                key={index}
+                className={`h-1 transition-all ${
+                  index === currentIndex ? 'w-8 bg-[#FFEB00]' : 'w-3 bg-[#E0E2E6]'
+                }`}
+                onClick={() => setCurrentIndex(index)}
+              />
+            ))}
+          </div>
         </div>
       </div>
-
-      <style jsx>{`
-        .stories {
-          padding: 80px 0;
-          background: linear-gradient(135deg, #f9f9f9, #fff);
-        }
-        .container {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 20px;
-        }
-        .section-header {
-          text-align: center;
-          margin-bottom: 50px;
-        }
-        .section-header h2 {
-          font-size: 2.5rem;
-          color: #333;
-        }
-        .highlight {
-          color: #E91E63;
-        }
-        .underline {
-          width: 60px;
-          height: 3px;
-          background: #E91E63;
-          margin: 15px auto;
-        }
-        .section-subtitle {
-          color: #666;
-          font-size: 1.1rem;
-        }
-        .testimonial-slider {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 20px;
-          position: relative;
-        }
-        .slider-btn {
-          background: #E91E63;
-          color: white;
-          border: none;
-          width: 45px;
-          height: 45px;
-          border-radius: 50%;
-          cursor: pointer;
-          transition: all 0.3s;
-        }
-        .slider-btn:hover {
-          background: #C2185B;
-          transform: scale(1.05);
-        }
-        .testimonial-card {
-          background: white;
-          padding: 40px;
-          border-radius: 20px;
-          max-width: 700px;
-          text-align: center;
-          box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-          position: relative;
-        }
-        .quote-icon {
-          font-size: 5rem;
-          color: #E91E63;
-          opacity: 0.3;
-          position: absolute;
-          top: 20px;
-          left: 30px;
-          font-family: serif;
-        }
-        .testimonial-text {
-          font-size: 1.2rem;
-          line-height: 1.8;
-          color: #555;
-          margin: 30px 0;
-          font-style: italic;
-        }
-        .author-info {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 15px;
-          margin-top: 20px;
-        }
-        .author-info img {
-          width: 60px;
-          height: 60px;
-          border-radius: 50%;
-          object-fit: cover;
-        }
-        .author-info h4 {
-          color: #333;
-          margin-bottom: 5px;
-        }
-        .achievement {
-          color: #E91E63;
-          font-weight: 500;
-          font-size: 0.9rem;
-        }
-        .dots {
-          display: flex;
-          justify-content: center;
-          gap: 10px;
-          margin-top: 30px;
-        }
-        .dot {
-          width: 12px;
-          height: 12px;
-          border-radius: 50%;
-          background: #ddd;
-          border: none;
-          cursor: pointer;
-          transition: all 0.3s;
-        }
-        .dot.active {
-          background: #E91E63;
-          width: 30px;
-          border-radius: 10px;
-        }
-        @media (max-width: 768px) {
-          .testimonial-card {
-            padding: 30px 20px;
-          }
-          .testimonial-text {
-            font-size: 1rem;
-          }
-          .slider-btn {
-            width: 35px;
-            height: 35px;
-          }
-        }
-      `}</style>
     </section>
   )
 }
