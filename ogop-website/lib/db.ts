@@ -2,7 +2,6 @@ import { neon } from '@neondatabase/serverless'
 
 const sql = neon(process.env.DATABASE_URL!)
 
-// Initialize tables
 export async function initDB() {
   await sql`
     CREATE TABLE IF NOT EXISTS site_settings (
@@ -150,6 +149,55 @@ export async function initDB() {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `
+
+  const valuesCount = await sql`SELECT COUNT(*) FROM core_values`
+  if (parseInt(valuesCount[0].count) === 0) {
+    await sql`
+      INSERT INTO core_values (icon, title, description, display_order) VALUES
+      ('fa-heart', 'Compassion', 'We treat each girl with love, respect, and understanding.', 1),
+      ('fa-star', 'Empowerment', 'We believe in equipping teen mothers with education and skills for self-reliance.', 2),
+      ('fa-shield', 'Integrity', 'We uphold transparency, accountability, and ethical conduct in everything we do.', 3),
+      ('fa-users', 'Inclusivity', 'We serve all teen mothers irrespective of background, religion, or ethnicity.', 4),
+      ('fa-church', 'Faith-Based Approach', 'We integrate Christian values in counselling and rehabilitation.', 5)
+    `
+  }
+
+  const statsCount = await sql`SELECT COUNT(*) FROM stats`
+  if (parseInt(statsCount[0].count) === 0) {
+    await sql`
+      INSERT INTO stats (number, label, suffix, display_order) VALUES
+      (4, 'Teen Mothers Re-enrolled', '+', 1),
+      (50, 'Reported Improved Mental Health', '%', 2),
+      (50, 'Parents Now Supporting Education', '%', 3),
+      (50, 'Returned to School', '%', 4)
+    `
+  }
+
+  const metricsCount = await sql`SELECT COUNT(*) FROM impact_metrics`
+  if (parseInt(metricsCount[0].count) === 0) {
+    await sql`
+      INSERT INTO impact_metrics (metric_name, percentage, display_order) VALUES
+      ('School Re-enrollment', 50, 1),
+      ('Mental Health Improvement', 50, 2),
+      ('Parental Support', 50, 3)
+    `
+  }
+
+  const milestonesCount = await sql`SELECT COUNT(*) FROM impact_milestones`
+  if (parseInt(milestonesCount[0].count) === 0) {
+    await sql`
+      INSERT INTO impact_milestones (milestone, display_order) VALUES
+      ('Founded in 2023 with a mission to restore hope', 1),
+      ('Successfully re-enrolled teen mothers in schools', 2),
+      ('Established community partnerships in Malawi', 3),
+      ('Launched skills development programs', 4)
+    `
+  }
+
+  console.log('Database initialized successfully')
 }
 
 export { sql }
+
+const db = { sql, initDB }
+export default db
