@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Eye, Target, BookOpen, Heart, Star, Shield, Users, Church } from 'lucide-react'
+import { Eye, Target, BookOpen, Heart, Handshake, Shield, Users, Church } from 'lucide-react'
 
 interface AboutContent {
   scripture: string
@@ -26,7 +26,7 @@ export default function AboutSection() {
   })
   const [coreValues, setCoreValues] = useState<CoreValue[]>([
     { id: 1, icon: 'heart', title: 'Compassion', description: 'We treat each girl with love, respect, and understanding.' },
-    { id: 2, icon: 'star', title: 'Empowerment', description: 'We believe in equipping teen mothers with education and skills.' },
+    { id: 2, icon: 'handshake', title: 'Empowerment', description: 'We believe in equipping teen mothers with education and skills.' },
     { id: 3, icon: 'shield', title: 'Integrity', description: 'We uphold transparency, accountability, and ethical conduct.' },
     { id: 4, icon: 'users', title: 'Inclusivity', description: 'We serve all teen mothers irrespective of background.' },
     { id: 5, icon: 'church', title: 'Faith-Based', description: 'We integrate Christian values in counselling and rehabilitation.' }
@@ -37,7 +37,23 @@ export default function AboutSection() {
       .then(res => res.json())
       .then(data => {
         if (data.about) setAbout(data.about)
-        if (data.values) setCoreValues(data.values)
+        if (data.values) {
+          // Map FontAwesome icons to lucide-react icon names
+          const mappedValues = data.values.map((v: any) => {
+            const iconMap: Record<string, string> = {
+              'fa-heart': 'heart',
+              'fa-star': 'handshake',
+              'fa-shield': 'shield',
+              'fa-users': 'users',
+              'fa-church': 'church'
+            }
+            return {
+              ...v,
+              icon: iconMap[v.icon] || 'heart'
+            }
+          })
+          setCoreValues(mappedValues)
+        }
       })
       .catch(console.error)
   }, [])
@@ -45,7 +61,7 @@ export default function AboutSection() {
   const getIcon = (iconName: string) => {
     switch(iconName) {
       case 'heart': return <Heart className="w-8 h-8 text-[#003A99] mx-auto mb-3" />
-      case 'star': return <Star className="w-8 h-8 text-[#003A99] mx-auto mb-3" />
+      case 'handshake': return <Handshake className="w-8 h-8 text-[#003A99] mx-auto mb-3" />
       case 'shield': return <Shield className="w-8 h-8 text-[#003A99] mx-auto mb-3" />
       case 'users': return <Users className="w-8 h-8 text-[#003A99] mx-auto mb-3" />
       case 'church': return <Church className="w-8 h-8 text-[#003A99] mx-auto mb-3" />
