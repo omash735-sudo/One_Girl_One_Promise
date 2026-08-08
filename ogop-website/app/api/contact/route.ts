@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { sql } from '@/lib/db'
 import { verifyToken } from '@/lib/auth'
 
-// Submit contact form (public)
 export async function POST(req: NextRequest) {
   try {
     const { name, email, subject, message } = await req.json()
@@ -12,16 +11,13 @@ export async function POST(req: NextRequest) {
       VALUES (${name}, ${email}, ${subject}, ${message})
     `
     
-    // Optional: Send email notification
-    // await sendEmailNotification({ name, email, subject, message })
-    
     return NextResponse.json({ success: true })
   } catch (error) {
+    console.error('Contact POST error:', error)
     return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }
 
-// Get messages (admin only)
 export async function GET(req: NextRequest) {
   try {
     const token = req.headers.get('authorization')?.replace('Bearer ', '')
@@ -38,6 +34,47 @@ export async function GET(req: NextRequest) {
     
     return NextResponse.json(messages)
   } catch (error) {
+    console.error('Contact GET error:', error)
+    return NextResponse.json({ error: 'Server error' }, { status: 500 })
+  }
+}
+
+export async function PUT(req: NextRequest) {
+  try {
+    const token = req.headers.get('authorization')?.replace('Bearer ', '')
+    const decoded = verifyToken(token)
+    
+    if (!decoded) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    
+    const { id, read } = await req.json()
+    await sql`
+      UPDATE contact_messages 
+      SET is_read = ${read} 
+      WHERE id = ${id}
+    `
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error('Contact PUT error:', error)
+    return NextResponse.json({ error: 'Server error' }, { status: 500 })
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const token = req.headers.get('authorization')?.replace('Bearer ', '')
+    const decoded = verifyToken(token)
+    
+    if (!decoded) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    
+    const { id } = await req.json()
+    await sql`DELETE FROM contact_messages WHERE id = ${id}`
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error('Contact DELETE error:', error)
     return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }
