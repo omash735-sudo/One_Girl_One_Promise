@@ -1,16 +1,15 @@
-import HeroSection from '@/components/HeroSection'
+import HeroCarousel from '@/components/HeroCarousel'
 import AboutSection from '@/components/AboutSection'
 import ProgramsSection from '@/components/ProgramsSection'
 import ImpactSection from '@/components/ImpactSection'
 import SuccessStories from '@/components/SuccessStories'
-import ContactSection from '@/components/ContactSection'
 import NewsletterSection from '@/components/NewsletterSection'
+import ContactSection from '@/components/ContactSection'
 
 export default async function Home() {
-  // Data is fetched inside each component for better performance
   return (
     <>
-      <HeroSection />
+      <HeroCarousel />
       <AboutSection />
       <ProgramsSection />
       <ImpactSection />
