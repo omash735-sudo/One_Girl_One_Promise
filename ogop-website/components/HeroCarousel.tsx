@@ -17,39 +17,39 @@ interface Slide {
 const slides: Slide[] = [
   {
     id: 1,
-    title: 'Empowering Teen Mothers Through Education',
-    description: 'Providing access to quality education and life skills training for young mothers in Malawi.',
-    image: 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
-    ctaText: 'Learn More',
-    ctaLink: '/about',
-    badge: 'Current Initiative'
-  },
-  {
-    id: 2,
     title: 'Yes, I Can Become',
     description: 'Restoring hope and opportunity to teen mothers in rural Malawi through education and support.',
-    image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
+    image: 'https://res.cloudinary.com/dfsvnaslv/image/upload/v1786228154/IMG-20260809-WA0000_kq2bnn.jpg',
     ctaText: 'Support a Girl',
     ctaLink: '/donate',
     badge: 'Our Mission'
   },
   {
-    id: 3,
-    title: 'Research Initiative: Breaking Barriers',
-    description: 'Our latest research on education access for teen mothers in rural Malawi shows promising results.',
-    image: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
-    ctaText: 'View Research',
-    ctaLink: '/research',
-    badge: 'Research'
-  },
-  {
-    id: 4,
+    id: 2,
     title: 'Join Us in Making a Difference',
     description: 'Become part of our mission to restore hope and create opportunities for young mothers.',
-    image: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
+    image: 'https://res.cloudinary.com/dfsvnaslv/image/upload/v1786228094/IMG-20260809-WA0006_whfegv.jpg',
     ctaText: 'Support Us',
     ctaLink: '/support',
     badge: 'Get Involved'
+  },
+  {
+    id: 3,
+    title: 'Empowering Teen Mothers Through Education',
+    description: 'Providing access to quality education and life skills training for young mothers in Malawi.',
+    image: 'https://res.cloudinary.com/dfsvnaslv/image/upload/v1786228094/IMG-20260809-WA0005_e9weot.jpg',
+    ctaText: 'Learn More',
+    ctaLink: '/about',
+    badge: 'Current Initiative'
+  },
+  {
+    id: 4,
+    title: 'Community Support & Outreach',
+    description: 'Reaching families in rural communities with essential supplies and support services.',
+    image: 'https://res.cloudinary.com/dfsvnaslv/image/upload/v1786228154/IMG-20260809-WA0001_niyrre.jpg',
+    ctaText: 'View Our Work',
+    ctaLink: '/our-work',
+    badge: 'Community Outreach'
   }
 ]
 
@@ -104,15 +104,15 @@ export default function HeroCarousel() {
                         {slide.badge}
                       </span>
                     )}
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
+                    <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-3 md:mb-4">
                       {slide.title}
                     </h1>
-                    <p className="text-base sm:text-lg md:text-xl text-gray-200 mb-6 max-w-2xl">
+                    <p className="text-sm sm:text-base md:text-xl text-gray-200 mb-4 md:mb-6 max-w-2xl">
                       {slide.description}
                     </p>
                     <Link
                       href={slide.ctaLink}
-                      className="inline-block bg-[#1A7F00] text-white px-8 py-3 font-bold hover:bg-[#136000] transition-colors"
+                      className="inline-block bg-[#1A7F00] text-white px-6 md:px-8 py-2.5 md:py-3 font-bold text-sm md:text-base hover:bg-[#136000] transition-colors"
                     >
                       {slide.ctaText}
                     </Link>
@@ -123,32 +123,38 @@ export default function HeroCarousel() {
           </div>
         ))}
 
-        <button
-          onClick={prevSlide}
-          className="absolute left-4 top-1/2 -translate-y-1/2 z-30 bg-[#1A7F00] p-2 hover:bg-[#136000] transition-colors"
-          aria-label="Previous slide"
-        >
-          <ChevronLeft className="w-6 h-6 text-white" />
-        </button>
+        {/* Navigation Controls - Responsive and positioned to not overlap content */}
+        <div className="absolute inset-0 z-30 pointer-events-none">
+          <div className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <button
+              onClick={prevSlide}
+              className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 pointer-events-auto bg-[#1A7F00] p-1.5 sm:p-2 hover:bg-[#136000] transition-colors z-30"
+              aria-label="Previous slide"
+            >
+              <ChevronLeft className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
+            </button>
 
-        <button
-          onClick={nextSlide}
-          className="absolute right-4 top-1/2 -translate-y-1/2 z-30 bg-[#1A7F00] p-2 hover:bg-[#136000] transition-colors"
-          aria-label="Next slide"
-        >
-          <ChevronRight className="w-6 h-6 text-white" />
-        </button>
+            <button
+              onClick={nextSlide}
+              className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 pointer-events-auto bg-[#1A7F00] p-1.5 sm:p-2 hover:bg-[#136000] transition-colors z-30"
+              aria-label="Next slide"
+            >
+              <ChevronRight className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
+            </button>
+          </div>
+        </div>
 
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-2">
+        {/* Slide Indicators */}
+        <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-1.5 sm:gap-2">
           {slides.map((_, index) => (
             <button
               key={index}
               onClick={() => goToSlide(index)}
-              className={`transition-colors ${
+              className={`transition-all ${
                 index === currentSlide 
-                  ? 'bg-[#FFEB00] w-8' 
-                  : 'bg-white/50 w-3 hover:bg-white/70'
-              } h-1`}
+                  ? 'bg-[#FFEB00] w-6 sm:w-8 h-1' 
+                  : 'bg-white/50 w-2 sm:w-3 h-1 hover:bg-white/70'
+              }`}
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}
