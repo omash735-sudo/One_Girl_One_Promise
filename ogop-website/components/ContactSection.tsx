@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { MapPin, Phone, Mail, Facebook, Instagram, Twitter, MessageCircle } from 'lucide-react'
 
 export default function ContactSection() {
   const [formData, setFormData] = useState({
@@ -57,21 +58,21 @@ export default function ContactSection() {
         <div className="grid md:grid-cols-3 gap-8">
           <div className="md:col-span-1 space-y-4">
             <div className="border border-[#E0E2E6] p-6 flex items-center gap-4">
-              <span className="text-2xl text-[#003A99]">📍</span>
+              <MapPin className="w-6 h-6 text-[#003A99] flex-shrink-0" />
               <div>
                 <h4 className="font-bold text-[#1A1A1A]">Visit Us</h4>
                 <p className="text-[#4A4F59] text-sm">Mdeka, Malawi</p>
               </div>
             </div>
             <div className="border border-[#E0E2E6] p-6 flex items-center gap-4">
-              <span className="text-2xl text-[#1A7F00]">📞</span>
+              <Phone className="w-6 h-6 text-[#1A7F00] flex-shrink-0" />
               <div>
                 <h4 className="font-bold text-[#1A1A1A]">Call Us</h4>
                 <p className="text-[#4A4F59] text-sm">+265 983 711 922</p>
               </div>
             </div>
             <div className="border border-[#E0E2E6] p-6 flex items-center gap-4">
-              <span className="text-2xl text-[#FFEB00]">✉️</span>
+              <Mail className="w-6 h-6 text-[#FFEB00] flex-shrink-0" />
               <div>
                 <h4 className="font-bold text-[#1A1A1A]">Email Us</h4>
                 <p className="text-[#4A4F59] text-sm">onegirlonepromise@gmail.com</p>
@@ -80,10 +81,18 @@ export default function ContactSection() {
             <div className="border border-[#E0E2E6] p-6 text-center">
               <h4 className="font-bold text-[#1A1A1A] mb-3">Follow Us</h4>
               <div className="flex justify-center gap-3">
-                <a href="#" className="bg-[#003A99] text-white w-10 h-10 flex items-center justify-center hover:bg-[#002A70] transition-colors">📘</a>
-                <a href="#" className="bg-[#003A99] text-white w-10 h-10 flex items-center justify-center hover:bg-[#002A70] transition-colors">📷</a>
-                <a href="#" className="bg-[#003A99] text-white w-10 h-10 flex items-center justify-center hover:bg-[#002A70] transition-colors">🐦</a>
-                <a href="https://wa.me/265983711922" className="bg-[#1A7F00] text-white w-10 h-10 flex items-center justify-center hover:bg-[#136000] transition-colors">💬</a>
+                <a href="#" className="bg-[#003A99] text-white w-10 h-10 flex items-center justify-center hover:bg-[#002A70] transition-colors">
+                  <Facebook className="w-5 h-5" />
+                </a>
+                <a href="#" className="bg-[#003A99] text-white w-10 h-10 flex items-center justify-center hover:bg-[#002A70] transition-colors">
+                  <Instagram className="w-5 h-5" />
+                </a>
+                <a href="#" className="bg-[#003A99] text-white w-10 h-10 flex items-center justify-center hover:bg-[#002A70] transition-colors">
+                  <Twitter className="w-5 h-5" />
+                </a>
+                <a href="https://wa.me/265983711922" className="bg-[#1A7F00] text-white w-10 h-10 flex items-center justify-center hover:bg-[#136000] transition-colors">
+                  <MessageCircle className="w-5 h-5" />
+                </a>
               </div>
             </div>
           </div>
