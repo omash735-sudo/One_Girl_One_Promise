@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { HeartHandshake } from 'lucide-react'
+import { HeartHandshake, Menu, X } from 'lucide-react'
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -11,7 +11,6 @@ export default function Navbar() {
   const [isJoinUsOpen, setIsJoinUsOpen] = useState(false)
   const pathname = usePathname()
   const dropdownRef = useRef<HTMLDivElement>(null)
-  const mobileDropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,7 +20,6 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -32,7 +30,6 @@ export default function Navbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  // Close mobile menu on resize to desktop
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth > 1024) {
@@ -72,7 +69,6 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 md:h-20">
             
-            {/* Logo */}
             <Link href="/" className="flex items-center gap-3 flex-shrink-0">
               <img 
                 src="https://res.cloudinary.com/dfsvnaslv/image/upload/v1786219258/file_0000000034e48246addcab843282da68_260808214416_l1r4bm.png"
@@ -89,7 +85,6 @@ export default function Navbar() {
               </div>
             </Link>
 
-            {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-8">
               {navLinks.map((link) => (
                 <Link
@@ -105,7 +100,6 @@ export default function Navbar() {
                 </Link>
               ))}
 
-              {/* Join Us Dropdown */}
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setIsJoinUsOpen(!isJoinUsOpen)}
@@ -126,7 +120,6 @@ export default function Navbar() {
                   </svg>
                 </button>
 
-                {/* Dropdown Menu */}
                 {isJoinUsOpen && (
                   <div className="absolute top-full left-0 mt-2 w-56 bg-white border border-[#E0E2E6] shadow-lg">
                     <div className="py-2">
@@ -145,7 +138,6 @@ export default function Navbar() {
                 )}
               </div>
 
-              {/* Support Button */}
               <Link
                 href="/support"
                 className="flex items-center gap-2 px-5 py-2.5 border-2 border-[#1A7F00] text-[#1A7F00] font-bold text-sm transition-all hover:bg-[#1A7F00] hover:text-white"
@@ -155,36 +147,37 @@ export default function Navbar() {
               </Link>
             </div>
 
-            {/* Mobile Menu Button */}
-            <button
-              className="lg:hidden p-2 text-[#1A1A1A] hover:text-[#003A99] transition-colors"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              aria-label="Toggle menu"
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+            <div className="flex lg:hidden items-center gap-3">
+              <Link
+                href="/support"
+                className="flex items-center gap-1 px-3 py-2 border-2 border-[#1A7F00] text-[#1A7F00] font-bold text-xs transition-all hover:bg-[#1A7F00] hover:text-white"
+              >
+                <HeartHandshake className="w-4 h-4" />
+                <span>Support</span>
+              </Link>
+              
+              <button
+                className="p-2 text-[#1A1A1A] hover:text-[#003A99] transition-colors"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                aria-label="Toggle menu"
               >
                 {isMobileMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <X className="w-6 h-6" />
                 ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  <Menu className="w-6 h-6" />
                 )}
-              </svg>
-            </button>
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Mobile Menu */}
         <div 
           className={`lg:hidden fixed inset-x-0 top-16 md:top-20 bg-white shadow-lg transition-transform duration-300 ease-in-out ${
             isMobileMenuOpen ? 'translate-y-0' : '-translate-y-full'
           }`}
-          style={{ height: 'calc(100vh - 4rem)' }}
+          style={{ height: 'calc(100vh - 4rem)', overflowY: 'auto' }}
         >
-          <div className="h-full overflow-y-auto px-4 py-6">
+          <div className="px-4 py-6">
             <div className="flex flex-col space-y-1">
               {navLinks.map((link) => (
                 <Link
@@ -201,7 +194,6 @@ export default function Navbar() {
                 </Link>
               ))}
 
-              {/* Mobile Join Us Accordion */}
               <div className="mt-1">
                 <button
                   onClick={() => setIsJoinUsOpen(!isJoinUsOpen)}
@@ -238,22 +230,11 @@ export default function Navbar() {
                   </div>
                 )}
               </div>
-
-              {/* Mobile Support Button */}
-              <Link
-                href="/support"
-                className="mt-4 flex items-center justify-center gap-2 px-6 py-3 border-2 border-[#1A7F00] text-[#1A7F00] font-bold text-base transition-all hover:bg-[#1A7F00] hover:text-white"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <HeartHandshake className="w-5 h-5" />
-                <span>Support Us</span>
-              </Link>
             </div>
           </div>
         </div>
       </nav>
 
-      {/* Spacer to prevent content from hiding under fixed navbar */}
       <div className="h-16 md:h-20" />
     </>
   )
