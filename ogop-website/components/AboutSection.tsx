@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { Eye, Target, BookOpen, Heart, Star, Shield, Users, Church } from 'lucide-react'
 
 interface AboutContent {
   scripture: string
@@ -24,11 +25,11 @@ export default function AboutSection() {
     mission: 'To empower teen mothers from underprivileged communities by providing educational support, psychological and spiritual rehabilitation, and skills development.'
   })
   const [coreValues, setCoreValues] = useState<CoreValue[]>([
-    { id: 1, icon: 'fa-heart', title: 'Compassion', description: 'We treat each girl with love, respect, and understanding.' },
-    { id: 2, icon: 'fa-star', title: 'Empowerment', description: 'We believe in equipping teen mothers with education and skills.' },
-    { id: 3, icon: 'fa-shield', title: 'Integrity', description: 'We uphold transparency, accountability, and ethical conduct.' },
-    { id: 4, icon: 'fa-users', title: 'Inclusivity', description: 'We serve all teen mothers irrespective of background.' },
-    { id: 5, icon: 'fa-church', title: 'Faith-Based', description: 'We integrate Christian values in counselling and rehabilitation.' }
+    { id: 1, icon: 'heart', title: 'Compassion', description: 'We treat each girl with love, respect, and understanding.' },
+    { id: 2, icon: 'star', title: 'Empowerment', description: 'We believe in equipping teen mothers with education and skills.' },
+    { id: 3, icon: 'shield', title: 'Integrity', description: 'We uphold transparency, accountability, and ethical conduct.' },
+    { id: 4, icon: 'users', title: 'Inclusivity', description: 'We serve all teen mothers irrespective of background.' },
+    { id: 5, icon: 'church', title: 'Faith-Based', description: 'We integrate Christian values in counselling and rehabilitation.' }
   ])
 
   useEffect(() => {
@@ -40,6 +41,17 @@ export default function AboutSection() {
       })
       .catch(console.error)
   }, [])
+
+  const getIcon = (iconName: string) => {
+    switch(iconName) {
+      case 'heart': return <Heart className="w-8 h-8 text-[#003A99] mx-auto mb-3" />
+      case 'star': return <Star className="w-8 h-8 text-[#003A99] mx-auto mb-3" />
+      case 'shield': return <Shield className="w-8 h-8 text-[#003A99] mx-auto mb-3" />
+      case 'users': return <Users className="w-8 h-8 text-[#003A99] mx-auto mb-3" />
+      case 'church': return <Church className="w-8 h-8 text-[#003A99] mx-auto mb-3" />
+      default: return <Heart className="w-8 h-8 text-[#003A99] mx-auto mb-3" />
+    }
+  }
 
   return (
     <section className="py-16 md:py-20 bg-[#F8F9FA]" id="about">
@@ -63,12 +75,12 @@ export default function AboutSection() {
             
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="border border-[#E0E2E6] p-6 bg-white">
-                <span className="text-3xl text-[#003A99]">👁️</span>
+                <Eye className="w-8 h-8 text-[#003A99] mb-2" />
                 <h3 className="font-bold text-[#1A1A1A] mt-2 mb-1">Our Vision</h3>
                 <p className="text-sm text-[#4A4F59]">{about.vision}</p>
               </div>
               <div className="border border-[#E0E2E6] p-6 bg-white">
-                <span className="text-3xl text-[#1A7F00]">🎯</span>
+                <Target className="w-8 h-8 text-[#1A7F00] mb-2" />
                 <h3 className="font-bold text-[#1A1A1A] mt-2 mb-1">Our Mission</h3>
                 <p className="text-sm text-[#4A4F59]">{about.mission}</p>
               </div>
@@ -77,7 +89,7 @@ export default function AboutSection() {
 
           <div className="bg-[#003A99] p-6 flex items-center justify-center min-h-[300px]">
             <div className="text-center text-white">
-              <div className="text-6xl mb-4">📚</div>
+              <BookOpen className="w-16 h-16 mx-auto mb-4" />
               <h3 className="text-2xl font-bold mb-2">Empowering Teen Mothers</h3>
               <p className="text-white/80">Restoring hope and creating opportunities for a brighter future.</p>
             </div>
@@ -89,7 +101,7 @@ export default function AboutSection() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
             {coreValues.map((value) => (
               <div key={value.id} className="border border-[#E0E2E6] p-6 bg-white text-center hover:border-[#003A99] transition-colors">
-                <i className={`fas ${value.icon} text-3xl text-[#003A99] mb-3`}></i>
+                {getIcon(value.icon)}
                 <h4 className="font-bold text-[#1A1A1A] mb-2">{value.title}</h4>
                 <p className="text-sm text-[#4A4F59]">{value.description}</p>
               </div>
