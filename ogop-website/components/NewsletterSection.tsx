@@ -31,88 +31,35 @@ export default function NewsletterSection() {
   }
 
   return (
-    <section className="newsletter">
-      <div className="container">
-        <div className="newsletter-content">
-          <h3>Subscribe to Our Newsletter</h3>
-          <p>Stay updated on our programs, success stories, and ways to help</p>
-          <form onSubmit={handleSubmit} className="newsletter-form">
-            <input
-              type="email"
-              placeholder="Your email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-            <button type="submit" disabled={subscribing}>
-              {subscribing ? 'Subscribing...' : 'Subscribe'}
-            </button>
-          </form>
-          {subscribed && <div className="success">Thank you for subscribing!</div>}
-        </div>
+    <section className="py-16 md:py-20 bg-[#003A99] text-white">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h3 className="text-2xl md:text-3xl font-bold mb-2">Subscribe to Our Newsletter</h3>
+        <p className="text-white/80 mb-8">Stay updated on our programs, success stories, and ways to help</p>
+        
+        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
+          <input
+            type="email"
+            placeholder="Your email address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="flex-1 px-4 py-3 text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FFEB00]"
+          />
+          <button 
+            type="submit" 
+            disabled={subscribing}
+            className="bg-[#FFEB00] text-[#1A1A1A] px-6 py-3 font-bold hover:bg-[#E6D400] transition-colors disabled:opacity-50"
+          >
+            {subscribing ? 'Subscribing...' : 'Subscribe'}
+          </button>
+        </form>
+        
+        {subscribed && (
+          <div className="mt-4 bg-[#1A7F00] text-white px-4 py-2 inline-block">
+            Thank you for subscribing!
+          </div>
+        )}
       </div>
-
-      <style jsx>{`
-        .newsletter {
-          background: linear-gradient(135deg, #E91E63, #9C27B0);
-          padding: 60px 0;
-          color: white;
-        }
-        .container {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 20px;
-        }
-        .newsletter-content {
-          text-align: center;
-          max-width: 600px;
-          margin: 0 auto;
-        }
-        .newsletter-content h3 {
-          font-size: 1.8rem;
-          margin-bottom: 10px;
-        }
-        .newsletter-form {
-          display: flex;
-          gap: 15px;
-          margin-top: 25px;
-        }
-        .newsletter-form input {
-          flex: 1;
-          padding: 15px;
-          border: none;
-          border-radius: 40px;
-          font-size: 1rem;
-        }
-        .newsletter-form button {
-          background: #2C3E50;
-          color: white;
-          border: none;
-          padding: 0 30px;
-          border-radius: 40px;
-          cursor: pointer;
-          font-weight: 600;
-          transition: all 0.3s;
-        }
-        .newsletter-form button:hover {
-          background: #1a252f;
-          transform: translateY(-2px);
-        }
-        .success {
-          margin-top: 20px;
-          padding: 10px;
-          background: rgba(255,255,255,0.2);
-          border-radius: 40px;
-        }
-        @media (max-width: 768px) {
-          .newsletter-form {
-            flex-direction: column;
-          }
-          .newsletter-form button {
-            padding: 12px;
-          }
-        }
-      `}</style>
     </section>
   )
 }
