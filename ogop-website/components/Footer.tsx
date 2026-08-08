@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import { MapPin, Phone, Mail, Facebook, Twitter, Instagram, Youtube } from 'lucide-react'
 
 interface SiteSettings {
   siteTitle: string
@@ -62,26 +63,28 @@ export default function Footer() {
 
           <div>
             <h4 className="font-bold text-[#FFEB00] mb-3">Contact Info</h4>
-            <ul className="space-y-2 text-sm text-gray-400">
-              <li className="flex items-center gap-2">
-                <span>📍</span>
+            <ul className="space-y-3 text-sm text-gray-400">
+              <li className="flex items-center gap-3">
+                <MapPin className="w-4 h-4 text-[#FFEB00] flex-shrink-0" />
                 <span>{settings.address}</span>
               </li>
-              <li className="flex items-center gap-2">
-                <span>📞</span>
+              <li className="flex items-center gap-3">
+                <Phone className="w-4 h-4 text-[#FFEB00] flex-shrink-0" />
                 <span>{settings.contactPhone}</span>
               </li>
-              <li className="flex items-center gap-2">
-                <span>✉️</span>
+              <li className="flex items-center gap-3">
+                <Mail className="w-4 h-4 text-[#FFEB00] flex-shrink-0" />
                 <span>{settings.contactEmail}</span>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-gray-800 pt-6 text-center text-sm text-gray-400">
-          <p>&copy; {new Date().getFullYear()} {settings.siteTitle}. All rights reserved.</p>
-          <p className="text-[#FFEB00] text-xs mt-1">Based on Isaiah 61:7</p>
+        <div className="border-t border-gray-800 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-sm text-gray-400">
+            &copy; {new Date().getFullYear()} {settings.siteTitle}. All rights reserved.
+          </p>
+          <p className="text-[#FFEB00] text-xs">Based on Isaiah 61:7</p>
         </div>
       </div>
     </footer>
