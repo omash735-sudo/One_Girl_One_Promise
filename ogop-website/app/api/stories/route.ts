@@ -11,6 +11,7 @@ export async function GET() {
     `
     return NextResponse.json(stories)
   } catch (error) {
+    console.error('Stories GET error:', error)
     return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }
@@ -34,6 +35,7 @@ export async function POST(req: NextRequest) {
     
     return NextResponse.json({ success: true, story: result[0] })
   } catch (error) {
+    console.error('Stories POST error:', error)
     return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }
@@ -47,24 +49,25 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
     
-    const { id, ...data } = await req.json()
+    const { id, name, age, story, achievement, image, isFeatured, displayOrder, isActive } = await req.json()
     
     await sql`
       UPDATE success_stories 
       SET 
-        name = COALESCE(${data.name}, name),
-        age = COALESCE(${data.age}, age),
-        story = COALESCE(${data.story}, story),
-        achievement = COALESCE(${data.achievement}, achievement),
-        image = COALESCE(${data.image}, image),
-        is_featured = COALESCE(${data.isFeatured}, is_featured),
-        display_order = COALESCE(${data.displayOrder}, display_order),
-        is_active = COALESCE(${data.isActive}, is_active)
+        name = COALESCE(${name}, name),
+        age = COALESCE(${age}, age),
+        story = COALESCE(${story}, story),
+        achievement = COALESCE(${achievement}, achievement),
+        image = COALESCE(${image}, image),
+        is_featured = COALESCE(${isFeatured}, is_featured),
+        display_order = COALESCE(${displayOrder}, display_order),
+        is_active = COALESCE(${isActive}, is_active)
       WHERE id = ${id}
     `
     
     return NextResponse.json({ success: true })
   } catch (error) {
+    console.error('Stories PUT error:', error)
     return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }
@@ -85,6 +88,7 @@ export async function DELETE(req: NextRequest) {
     
     return NextResponse.json({ success: true })
   } catch (error) {
+    console.error('Stories DELETE error:', error)
     return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }
