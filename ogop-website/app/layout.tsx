@@ -1,8 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter, Poppins } from 'next/font/google'
 import './globals.css'
-import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
+import dynamic from 'next/dynamic'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -16,16 +15,27 @@ const poppins = Poppins({
   display: 'swap',
 })
 
+// Dynamically import components with SSR disabled to avoid build issues
+const Navbar = dynamic(() => import('@/components/Navbar'), { 
+  ssr: false,
+  loading: () => <div className="h-16 md:h-20" />
+})
+
+const Footer = dynamic(() => import('@/components/Footer'), { 
+  ssr: false,
+  loading: () => <div className="h-16" />
+})
+
 export const metadata: Metadata = {
   title: {
-    default: 'One Goal One Promise - Empowering Teen Mothers in Malawi',
-    template: '%s | One Goal One Promise'
+    default: 'One Girl One Promise - Empowering Teen Mothers in Malawi',
+    template: '%s | One Girl One Promise'
   },
   description: 'OGOP empowers teen mothers through education, counselling, and skills development. Join us to restore hope and transform lives in Malawi.',
-  keywords: ['teen mothers', 'Malawi', 'education', 'empowerment', 'OGOP', 'One Goal One Promise', 'girls education', 'community development'],
-  authors: [{ name: 'One Goal One Promise' }],
-  creator: 'One Goal One Promise',
-  publisher: 'One Goal One Promise',
+  keywords: ['teen mothers', 'Malawi', 'education', 'empowerment', 'OGOP', 'One Girl One Promise', 'girls education', 'community development'],
+  authors: [{ name: 'One Girl One Promise' }],
+  creator: 'One Girl One Promise',
+  publisher: 'One Girl One Promise',
   robots: {
     index: true,
     follow: true,
@@ -41,21 +51,21 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     url: 'https://ogop.org',
-    title: 'One Goal One Promise - Empowering Teen Mothers in Malawi',
+    title: 'One Girl One Promise - Empowering Teen Mothers in Malawi',
     description: 'Restoring hope and opportunity to teen mothers in rural Malawi through education, counselling, and skills development.',
-    siteName: 'One Goal One Promise',
+    siteName: 'One Girl One Promise',
     images: [
       {
         url: 'https://res.cloudinary.com/dfsvnaslv/image/upload/v1786219258/file_0000000034e48246addcab843282da68_260808214416_l1r4bm.png',
         width: 1200,
         height: 630,
-        alt: 'One Goal One Promise Logo',
+        alt: 'One Girl One Promise Logo',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'One Goal One Promise - Empowering Teen Mothers in Malawi',
+    title: 'One Girl One Promise - Empowering Teen Mothers in Malawi',
     description: 'Restoring hope and opportunity to teen mothers in rural Malawi through education, counselling, and skills development.',
     images: ['https://res.cloudinary.com/dfsvnaslv/image/upload/v1786219258/file_0000000034e48246addcab843282da68_260808214416_l1r4bm.png'],
   },
