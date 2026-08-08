@@ -42,10 +42,8 @@ export default function Navbar() {
 
   const navLinks = [
     { href: '/', label: 'Home' },
-    { href: '/about', label: 'About Us' },
     { href: '/our-work', label: 'Our Work' },
-    { href: '/research', label: 'Research / Publications' },
-    { href: '/contact', label: 'Contact' },
+    { href: '/research', label: 'Research' },
   ]
 
   const joinUsOptions = [
@@ -75,7 +73,7 @@ export default function Navbar() {
               />
               <div className="hidden sm:block">
                 <span className="text-[#1A1A1A] font-bold text-lg md:text-xl tracking-tight">
-                  One Goal
+                  One Girl
                 </span>
                 <span className="text-[#FFEB00] font-bold text-lg md:text-xl tracking-tight">
                   {' '}One Promise
