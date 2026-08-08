@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Eye, Target, BookOpen, Heart, HandHelping, Shield, Users, Church } from 'lucide-react'
+import { Eye, Target, BookOpen, Heart, Hand, Shield, Users, Church } from 'lucide-react'
 
 interface AboutContent {
   scripture: string
@@ -60,7 +60,7 @@ export default function AboutSection() {
   const getIcon = (iconName: string) => {
     switch(iconName) {
       case 'heart': return <Heart className="w-8 h-8 text-[#003A99] mx-auto mb-3" />
-      case 'hand': return <HandHelping className="w-8 h-8 text-[#003A99] mx-auto mb-3" />
+      case 'hand': return <Hand className="w-8 h-8 text-[#003A99] mx-auto mb-3" />
       case 'shield': return <Shield className="w-8 h-8 text-[#003A99] mx-auto mb-3" />
       case 'users': return <Users className="w-8 h-8 text-[#003A99] mx-auto mb-3" />
       case 'church': return <Church className="w-8 h-8 text-[#003A99] mx-auto mb-3" />
