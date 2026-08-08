@@ -56,6 +56,7 @@ const slides: Slide[] = [
 export default function HeroCarousel() {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isAnimating, setIsAnimating] = useState(false)
+  const [isHovering, setIsHovering] = useState(false)
 
   const goToSlide = (index: number) => {
     if (isAnimating) return
@@ -80,7 +81,11 @@ export default function HeroCarousel() {
   }, [currentSlide])
 
   return (
-    <section className="relative w-full bg-[#1A1A1A]">
+    <section 
+      className="relative w-full bg-[#1A1A1A]"
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+    >
       <div className="relative h-[500px] md:h-[600px] lg:h-[700px] overflow-hidden">
         {slides.map((slide, index) => (
           <div
@@ -123,23 +128,27 @@ export default function HeroCarousel() {
           </div>
         ))}
 
-        {/* Navigation Controls - Responsive and positioned to not overlap content */}
+        {/* Navigation Controls - Only visible on hover or touch */}
         <div className="absolute inset-0 z-30 pointer-events-none">
-          <div className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="relative h-full max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
             <button
               onClick={prevSlide}
-              className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 pointer-events-auto bg-[#1A7F00] p-1.5 sm:p-2 hover:bg-[#136000] transition-colors z-30"
+              className={`absolute left-1 sm:left-2 top-1/2 -translate-y-1/2 pointer-events-auto bg-[#1A7F00] p-2 sm:p-3 hover:bg-[#136000] transition-all duration-300 z-30 ${
+                isHovering ? 'opacity-100' : 'opacity-0'
+              }`}
               aria-label="Previous slide"
             >
-              <ChevronLeft className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
+              <ChevronLeft className="w-5 h-5 sm:w-7 sm:h-7 text-white" />
             </button>
 
             <button
               onClick={nextSlide}
-              className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 pointer-events-auto bg-[#1A7F00] p-1.5 sm:p-2 hover:bg-[#136000] transition-colors z-30"
+              className={`absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 pointer-events-auto bg-[#1A7F00] p-2 sm:p-3 hover:bg-[#136000] transition-all duration-300 z-30 ${
+                isHovering ? 'opacity-100' : 'opacity-0'
+              }`}
               aria-label="Next slide"
             >
-              <ChevronRight className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
+              <ChevronRight className="w-5 h-5 sm:w-7 sm:h-7 text-white" />
             </button>
           </div>
         </div>
