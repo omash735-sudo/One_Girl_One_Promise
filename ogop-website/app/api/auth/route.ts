@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { verifyAdminCredentials, generateToken, hashPassword } from '@/lib/auth'
+import { verifyAdminCredentials, generateToken, hashPassword, verifyToken } from '@/lib/auth'
 import { sql } from '@/lib/db'
 
-// Login
 export async function POST(req: NextRequest) {
   try {
     const { username, password, action } = await req.json()
     
-    // Login action
     if (action === 'login') {
       const user = await verifyAdminCredentials(username, password)
       
@@ -27,7 +25,6 @@ export async function POST(req: NextRequest) {
       })
     }
     
-    // Setup first admin (only works if no admin exists)
     if (action === 'setup') {
       const existingAdmins = await sql`SELECT * FROM admin_users LIMIT 1`
       
@@ -55,7 +52,6 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// Verify token
 export async function GET(req: NextRequest) {
   const token = req.headers.get('authorization')?.replace('Bearer ', '')
   
