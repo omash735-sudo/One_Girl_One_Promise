@@ -70,7 +70,7 @@ export default function Navbar() {
             <Link href="/" className="flex items-center gap-3 flex-shrink-0">
               <img 
                 src="https://res.cloudinary.com/dfsvnaslv/image/upload/v1786219258/file_0000000034e48246addcab843282da68_260808214416_l1r4bm.png"
-                alt="One Goal One Promise Logo"
+                alt="One Girl One Promise Logo"
                 className="h-10 md:h-12 w-auto object-contain"
               />
               <div className="hidden sm:block">
