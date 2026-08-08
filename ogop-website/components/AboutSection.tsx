@@ -18,210 +18,85 @@ interface CoreValue {
 
 export default function AboutSection() {
   const [about, setAbout] = useState<AboutContent>({
-    scripture: '',
-    description: '',
-    vision: '',
-    mission: ''
+    scripture: 'Instead of your shame there shall be a double portion...',
+    description: 'One Girl One Promise (OGOP) is a non-governmental organization founded on Godly principles, based in Malawi. Founded in 2023, OGOP is committed to restoring hope and opportunity to teenage mothers from underprivileged rural communities.',
+    vision: 'A Malawi where every teen mother has the opportunity to return to school, achieve her dreams, and contribute meaningfully to society.',
+    mission: 'To empower teen mothers from underprivileged communities by providing educational support, psychological and spiritual rehabilitation, and skills development.'
   })
-  const [coreValues, setCoreValues] = useState<CoreValue[]>([])
+  const [coreValues, setCoreValues] = useState<CoreValue[]>([
+    { id: 1, icon: 'fa-heart', title: 'Compassion', description: 'We treat each girl with love, respect, and understanding.' },
+    { id: 2, icon: 'fa-star', title: 'Empowerment', description: 'We believe in equipping teen mothers with education and skills.' },
+    { id: 3, icon: 'fa-shield', title: 'Integrity', description: 'We uphold transparency, accountability, and ethical conduct.' },
+    { id: 4, icon: 'fa-users', title: 'Inclusivity', description: 'We serve all teen mothers irrespective of background.' },
+    { id: 5, icon: 'fa-church', title: 'Faith-Based', description: 'We integrate Christian values in counselling and rehabilitation.' }
+  ])
 
   useEffect(() => {
     fetch('/api/content?type=about')
       .then(res => res.json())
       .then(data => {
-        setAbout(data.about || {})
-        setCoreValues(data.values || [])
+        if (data.about) setAbout(data.about)
+        if (data.values) setCoreValues(data.values)
       })
       .catch(console.error)
   }, [])
 
   return (
-    <section className="about" id="about">
-      <div className="container">
-        <div className="section-header">
-          <h2>About <span className="highlight">OGOP</span></h2>
-          <div className="underline"></div>
-          <p className="section-subtitle">One Girl One Promise - Transforming lives through education and compassion</p>
+    <section className="py-16 md:py-20 bg-[#F8F9FA]" id="about">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-[#1A1A1A]">
+            About <span className="text-[#003A99]">OGOP</span>
+          </h2>
+          <div className="w-16 h-1 bg-[#003A99] mx-auto mt-4 mb-4" />
+          <p className="text-[#4A4F59] max-w-2xl mx-auto">One Girl One Promise - Transforming lives through education and compassion</p>
         </div>
 
-        <div className="about-grid">
-          <div className="about-text">
+        <div className="grid md:grid-cols-2 gap-12 mb-16">
+          <div>
             {about.scripture && (
-              <div className="scripture-box">
-                <i className="fas fa-bible"></i>
-                <p>"{about.scripture}"</p>
+              <div className="bg-[#003A99] text-white p-6 mb-6">
+                <p className="italic text-lg">"{about.scripture}"</p>
               </div>
             )}
-            <p className="description">{about.description}</p>
+            <p className="text-[#4A4F59] leading-relaxed mb-6">{about.description}</p>
             
-            <div className="mission-vision">
-              <div className="card">
-                <i className="fas fa-eye"></i>
-                <h3>Our Vision</h3>
-                <p>{about.vision}</p>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div className="border border-[#E0E2E6] p-6 bg-white">
+                <span className="text-3xl text-[#003A99]">👁️</span>
+                <h3 className="font-bold text-[#1A1A1A] mt-2 mb-1">Our Vision</h3>
+                <p className="text-sm text-[#4A4F59]">{about.vision}</p>
               </div>
-              <div className="card">
-                <i className="fas fa-bullseye"></i>
-                <h3>Our Mission</h3>
-                <p>{about.mission}</p>
+              <div className="border border-[#E0E2E6] p-6 bg-white">
+                <span className="text-3xl text-[#1A7F00]">🎯</span>
+                <h3 className="font-bold text-[#1A1A1A] mt-2 mb-1">Our Mission</h3>
+                <p className="text-sm text-[#4A4F59]">{about.mission}</p>
               </div>
             </div>
           </div>
 
-          <div className="about-image">
-            <img 
-              src="/assets/about-image.jpg" 
-              alt="Teen mothers being empowered"
-              onError={(e) => {
-                e.currentTarget.src = 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'
-              }}
-            />
+          <div className="bg-[#003A99] p-6 flex items-center justify-center min-h-[300px]">
+            <div className="text-center text-white">
+              <div className="text-6xl mb-4">📚</div>
+              <h3 className="text-2xl font-bold mb-2">Empowering Teen Mothers</h3>
+              <p className="text-white/80">Restoring hope and creating opportunities for a brighter future.</p>
+            </div>
           </div>
         </div>
 
-        <div className="core-values">
-          <h3>Our Core Values</h3>
-          <div className="values-grid">
+        <div>
+          <h3 className="text-2xl font-bold text-center text-[#1A1A1A] mb-8">Our Core Values</h3>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
             {coreValues.map((value) => (
-              <div key={value.id} className="value-card">
-                <i className={`fas ${value.icon}`}></i>
-                <h4>{value.title}</h4>
-                <p>{value.description}</p>
+              <div key={value.id} className="border border-[#E0E2E6] p-6 bg-white text-center hover:border-[#003A99] transition-colors">
+                <i className={`fas ${value.icon} text-3xl text-[#003A99] mb-3`}></i>
+                <h4 className="font-bold text-[#1A1A1A] mb-2">{value.title}</h4>
+                <p className="text-sm text-[#4A4F59]">{value.description}</p>
               </div>
             ))}
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        .about {
-          padding: 80px 0;
-          background: #f9f9f9;
-        }
-        .container {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 20px;
-        }
-        .section-header {
-          text-align: center;
-          margin-bottom: 50px;
-        }
-        .section-header h2 {
-          font-size: 2.5rem;
-          color: #333;
-        }
-        .highlight {
-          color: #E91E63;
-        }
-        .underline {
-          width: 60px;
-          height: 3px;
-          background: #E91E63;
-          margin: 15px auto;
-        }
-        .section-subtitle {
-          color: #666;
-          font-size: 1.1rem;
-        }
-        .about-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 50px;
-          margin-bottom: 60px;
-        }
-        .scripture-box {
-          background: linear-gradient(135deg, #E91E63, #9C27B0);
-          color: white;
-          padding: 20px;
-          border-radius: 15px;
-          margin-bottom: 25px;
-          text-align: center;
-        }
-        .scripture-box i {
-          font-size: 2rem;
-          margin-bottom: 10px;
-        }
-        .scripture-box p {
-          font-style: italic;
-          font-size: 1.1rem;
-        }
-        .description {
-          line-height: 1.8;
-          color: #555;
-          margin-bottom: 30px;
-        }
-        .mission-vision {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 20px;
-        }
-        .mission-vision .card {
-          background: white;
-          padding: 20px;
-          border-radius: 10px;
-          box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-          transition: transform 0.3s;
-        }
-        .mission-vision .card:hover {
-          transform: translateY(-5px);
-        }
-        .mission-vision .card i {
-          font-size: 2rem;
-          color: #E91E63;
-          margin-bottom: 15px;
-        }
-        .mission-vision .card h3 {
-          margin-bottom: 10px;
-          color: #333;
-        }
-        .about-image img {
-          width: 100%;
-          border-radius: 15px;
-          box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-        .core-values {
-          margin-top: 40px;
-        }
-        .core-values h3 {
-          text-align: center;
-          font-size: 2rem;
-          margin-bottom: 40px;
-        }
-        .values-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-          gap: 30px;
-        }
-        .value-card {
-          text-align: center;
-          padding: 30px;
-          background: white;
-          border-radius: 10px;
-          transition: all 0.3s;
-        }
-        .value-card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-        .value-card i {
-          font-size: 2.5rem;
-          color: #E91E63;
-          margin-bottom: 15px;
-        }
-        .value-card h4 {
-          margin-bottom: 10px;
-          color: #333;
-        }
-        @media (max-width: 768px) {
-          .about-grid {
-            grid-template-columns: 1fr;
-          }
-          .mission-vision {
-            grid-template-columns: 1fr;
-          }
-        }
-      `}</style>
     </section>
   )
 }
