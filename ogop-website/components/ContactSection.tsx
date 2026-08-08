@@ -44,51 +44,53 @@ export default function ContactSection() {
   }
 
   return (
-    <section className="contact" id="contact">
-      <div className="container">
-        <div className="section-header">
-          <h2>Get In <span className="highlight">Touch</span></h2>
-          <div className="underline"></div>
-          <p className="section-subtitle">We'd love to hear from you</p>
+    <section className="py-16 md:py-20 bg-white" id="contact">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-[#1A1A1A]">
+            Get In <span className="text-[#003A99]">Touch</span>
+          </h2>
+          <div className="w-16 h-1 bg-[#003A99] mx-auto mt-4 mb-4" />
+          <p className="text-[#4A4F59]">We'd love to hear from you</p>
         </div>
 
-        <div className="contact-grid">
-          <div className="contact-info">
-            <div className="info-card">
-              <i className="fas fa-map-marker-alt"></i>
+        <div className="grid md:grid-cols-3 gap-8">
+          <div className="md:col-span-1 space-y-4">
+            <div className="border border-[#E0E2E6] p-6 flex items-center gap-4">
+              <span className="text-2xl text-[#003A99]">📍</span>
               <div>
-                <h4>Visit Us</h4>
-                <p>Mdeka, Malawi</p>
+                <h4 className="font-bold text-[#1A1A1A]">Visit Us</h4>
+                <p className="text-[#4A4F59] text-sm">Mdeka, Malawi</p>
               </div>
             </div>
-            <div className="info-card">
-              <i className="fas fa-phone"></i>
+            <div className="border border-[#E0E2E6] p-6 flex items-center gap-4">
+              <span className="text-2xl text-[#1A7F00]">📞</span>
               <div>
-                <h4>Call Us</h4>
-                <p>+265 983 711 922</p>
+                <h4 className="font-bold text-[#1A1A1A]">Call Us</h4>
+                <p className="text-[#4A4F59] text-sm">+265 983 711 922</p>
               </div>
             </div>
-            <div className="info-card">
-              <i className="fas fa-envelope"></i>
+            <div className="border border-[#E0E2E6] p-6 flex items-center gap-4">
+              <span className="text-2xl text-[#FFEB00]">✉️</span>
               <div>
-                <h4>Email Us</h4>
-                <p>onegirlonepromise@gmail.com</p>
+                <h4 className="font-bold text-[#1A1A1A]">Email Us</h4>
+                <p className="text-[#4A4F59] text-sm">onegirlonepromise@gmail.com</p>
               </div>
             </div>
-            <div className="social-media">
-              <h4>Follow Us</h4>
-              <div className="social-icons">
-                <a href="#" target="_blank"><i className="fab fa-facebook-f"></i></a>
-                <a href="#" target="_blank"><i className="fab fa-instagram"></i></a>
-                <a href="#" target="_blank"><i className="fab fa-twitter"></i></a>
-                <a href="https://wa.me/265983711922" target="_blank"><i className="fab fa-whatsapp"></i></a>
+            <div className="border border-[#E0E2E6] p-6 text-center">
+              <h4 className="font-bold text-[#1A1A1A] mb-3">Follow Us</h4>
+              <div className="flex justify-center gap-3">
+                <a href="#" className="bg-[#003A99] text-white w-10 h-10 flex items-center justify-center hover:bg-[#002A70] transition-colors">📘</a>
+                <a href="#" className="bg-[#003A99] text-white w-10 h-10 flex items-center justify-center hover:bg-[#002A70] transition-colors">📷</a>
+                <a href="#" className="bg-[#003A99] text-white w-10 h-10 flex items-center justify-center hover:bg-[#002A70] transition-colors">🐦</a>
+                <a href="https://wa.me/265983711922" className="bg-[#1A7F00] text-white w-10 h-10 flex items-center justify-center hover:bg-[#136000] transition-colors">💬</a>
               </div>
             </div>
           </div>
 
-          <div className="contact-form">
-            <form onSubmit={handleSubmit}>
-              <div className="form-row">
+          <div className="md:col-span-2">
+            <form onSubmit={handleSubmit} className="border border-[#E0E2E6] p-6 bg-[#F8F9FA]">
+              <div className="grid sm:grid-cols-2 gap-4">
                 <input
                   type="text"
                   name="name"
@@ -96,6 +98,7 @@ export default function ContactSection() {
                   value={formData.name}
                   onChange={handleChange}
                   required
+                  className="px-4 py-3 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99] bg-white"
                 />
                 <input
                   type="email"
@@ -104,6 +107,7 @@ export default function ContactSection() {
                   value={formData.email}
                   onChange={handleChange}
                   required
+                  className="px-4 py-3 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99] bg-white"
                 />
               </div>
               <input
@@ -112,6 +116,7 @@ export default function ContactSection() {
                 placeholder="Subject"
                 value={formData.subject}
                 onChange={handleChange}
+                className="w-full px-4 py-3 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99] bg-white mt-4"
               />
               <textarea
                 name="message"
@@ -120,160 +125,21 @@ export default function ContactSection() {
                 value={formData.message}
                 onChange={handleChange}
                 required
-              ></textarea>
-              <button type="submit" disabled={submitting}>
+                className="w-full px-4 py-3 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99] bg-white mt-4 resize-vertical"
+              />
+              <button 
+                type="submit" 
+                disabled={submitting}
+                className="w-full bg-[#1A7F00] text-white py-3 font-bold hover:bg-[#136000] transition-colors mt-4 disabled:opacity-50"
+              >
                 {submitting ? 'Sending...' : 'Send Message'}
               </button>
-              {submitted && <div className="success-message">Message sent successfully!</div>}
-              {error && <div className="error-message">{error}</div>}
+              {submitted && <div className="mt-4 bg-[#1A7F00] text-white px-4 py-2 text-center">Message sent successfully!</div>}
+              {error && <div className="mt-4 bg-[#E31E24] text-white px-4 py-2 text-center">{error}</div>}
             </form>
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        .contact {
-          padding: 80px 0;
-          background: #f9f9f9;
-        }
-        .container {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 20px;
-        }
-        .section-header {
-          text-align: center;
-          margin-bottom: 50px;
-        }
-        .section-header h2 {
-          font-size: 2.5rem;
-          color: #333;
-        }
-        .highlight {
-          color: #E91E63;
-        }
-        .underline {
-          width: 60px;
-          height: 3px;
-          background: #E91E63;
-          margin: 15px auto;
-        }
-        .section-subtitle {
-          color: #666;
-          font-size: 1.1rem;
-        }
-        .contact-grid {
-          display: grid;
-          grid-template-columns: 1fr 2fr;
-          gap: 40px;
-        }
-        .info-card {
-          display: flex;
-          align-items: center;
-          gap: 15px;
-          padding: 20px;
-          background: white;
-          border-radius: 10px;
-          margin-bottom: 20px;
-          transition: transform 0.3s;
-        }
-        .info-card:hover {
-          transform: translateX(5px);
-        }
-        .info-card i {
-          font-size: 1.8rem;
-          color: #E91E63;
-        }
-        .info-card h4 {
-          margin-bottom: 5px;
-          color: #333;
-        }
-        .social-media {
-          margin-top: 30px;
-          text-align: center;
-        }
-        .social-icons {
-          display: flex;
-          gap: 15px;
-          justify-content: center;
-          margin-top: 15px;
-        }
-        .social-icons a {
-          width: 40px;
-          height: 40px;
-          background: #E91E63;
-          color: white;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: all 0.3s;
-        }
-        .social-icons a:hover {
-          background: #C2185B;
-          transform: translateY(-3px);
-        }
-        .contact-form form {
-          background: white;
-          padding: 30px;
-          border-radius: 15px;
-          box-shadow: 0 5px 20px rgba(0,0,0,0.05);
-        }
-        .form-row {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 15px;
-        }
-        input, textarea {
-          width: 100%;
-          padding: 12px;
-          border: 1px solid #ddd;
-          border-radius: 8px;
-          margin-bottom: 15px;
-          font-size: 1rem;
-        }
-        textarea {
-          resize: vertical;
-        }
-        button {
-          background: #E91E63;
-          color: white;
-          padding: 12px 30px;
-          border: none;
-          border-radius: 30px;
-          font-size: 1rem;
-          cursor: pointer;
-          transition: all 0.3s;
-        }
-        button:hover {
-          background: #C2185B;
-          transform: translateY(-2px);
-        }
-        .success-message {
-          background: #4CAF50;
-          color: white;
-          padding: 10px;
-          border-radius: 5px;
-          margin-top: 15px;
-          text-align: center;
-        }
-        .error-message {
-          background: #f44336;
-          color: white;
-          padding: 10px;
-          border-radius: 5px;
-          margin-top: 15px;
-          text-align: center;
-        }
-        @media (max-width: 768px) {
-          .contact-grid {
-            grid-template-columns: 1fr;
-          }
-          .form-row {
-            grid-template-columns: 1fr;
-          }
-        }
-      `}</style>
     </section>
   )
 }
