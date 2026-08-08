@@ -3,6 +3,27 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    /* Brand Colors */
+    --color-blue: #003A99;
+    --color-green: #1A7F00;
+    --color-yellow: #FFEB00;
+    --color-red: #E31E24;
+    --color-black: #1A1A1A;
+    
+    /* Neutrals */
+    --color-white: #FFFFFF;
+    --color-gray-50: #F8F9FA;
+    --color-gray-100: #F0F1F3;
+    --color-gray-200: #E0E2E6;
+    --color-gray-300: #C0C4CC;
+    --color-gray-400: #9A9FA8;
+    --color-gray-500: #6C727D;
+    --color-gray-600: #4A4F59;
+    --color-gray-700: #33373F;
+    --color-gray-800: #1E2024;
+  }
+
   * {
     margin: 0;
     padding: 0;
@@ -15,12 +36,20 @@
 
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    color: #333;
+    color: #1A1A1A;
+    background: #FFFFFF;
     overflow-x: hidden;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-poppins), system-ui, sans-serif;
+    color: #1A1A1A;
+  }
+
+  /* Focus states for accessibility */
+  *:focus-visible {
+    outline: 2px solid #003A99;
+    outline-offset: 2px;
   }
 }
 
@@ -29,33 +58,149 @@
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 
+  /* Primary Blue Button - For major CTAs */
   .btn-primary {
-    @apply bg-primary text-white px-6 py-3 rounded-full font-semibold 
-           transition-all duration-300 hover:bg-primaryDark hover:translate-y-[-2px] 
+    @apply bg-[#003A99] text-white px-6 py-3 font-semibold 
+           transition-all duration-300 hover:bg-[#002A70] 
            hover:shadow-lg inline-block;
+    border-radius: 0;
   }
 
+  /* Secondary White Button */
   .btn-secondary {
-    @apply bg-transparent border-2 border-white text-white px-6 py-3 rounded-full 
-           font-semibold transition-all duration-300 hover:bg-white hover:text-primary 
-           hover:translate-y-[-2px] inline-block;
+    @apply bg-transparent border-2 border-white text-white px-6 py-3 
+           font-semibold transition-all duration-300 hover:bg-white 
+           hover:text-[#003A99] inline-block;
+    border-radius: 0;
   }
 
-  .btn-outline {
-    @apply border-2 border-primary text-primary px-6 py-3 rounded-full font-semibold 
-           transition-all duration-300 hover:bg-primary hover:text-white inline-block;
+  /* Green Button - For interactive/support actions */
+  .btn-green {
+    @apply bg-[#1A7F00] text-white px-6 py-3 font-semibold 
+           transition-all duration-300 hover:bg-[#136000] 
+           hover:shadow-lg inline-block;
+    border-radius: 0;
   }
 
+  /* Outline Green Button */
+  .btn-outline-green {
+    @apply border-2 border-[#1A7F00] text-[#1A7F00] px-6 py-3 font-semibold 
+           transition-all duration-300 hover:bg-[#1A7F00] hover:text-white 
+           inline-block;
+    border-radius: 0;
+  }
+
+  /* Outline Blue Button */
+  .btn-outline-blue {
+    @apply border-2 border-[#003A99] text-[#003A99] px-6 py-3 font-semibold 
+           transition-all duration-300 hover:bg-[#003A99] hover:text-white 
+           inline-block;
+    border-radius: 0;
+  }
+
+  /* Section Titles */
   .section-title {
-    @apply text-3xl md:text-4xl font-bold text-center mb-4;
+    @apply text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-4;
+    color: #1A1A1A;
+  }
+
+  .section-title .highlight-blue {
+    color: #003A99;
+  }
+
+  .section-title .highlight-green {
+    color: #1A7F00;
+  }
+
+  .section-title .highlight-yellow {
+    color: #FFEB00;
   }
 
   .section-subtitle {
     @apply text-gray-600 text-center max-w-2xl mx-auto mb-12;
+    color: #4A4F59;
+    font-size: 1.125rem;
+    line-height: 1.75;
   }
 
-  .highlight {
-    @apply text-primary;
+  /* Yellow highlight text */
+  .highlight-yellow {
+    color: #FFEB00;
+  }
+
+  /* Blue highlight text */
+  .highlight-blue {
+    color: #003A99;
+  }
+
+  /* Green highlight text */
+  .highlight-green {
+    color: #1A7F00;
+  }
+
+  /* Cards with sharp corners */
+  .card {
+    @apply bg-white border border-[#E0E2E6] transition-all duration-300 
+           hover:shadow-md;
+    border-radius: 0;
+  }
+
+  .card-header {
+    @apply border-b border-[#E0E2E6] px-6 py-4 font-semibold;
+    color: #1A1A1A;
+  }
+
+  .card-body {
+    @apply px-6 py-4;
+  }
+
+  /* Badge with yellow accent */
+  .badge-yellow {
+    @apply inline-block px-3 py-1 text-sm font-semibold;
+    background: #FFEB00;
+    color: #1A1A1A;
+    border-radius: 0;
+  }
+
+  /* Badge with blue accent */
+  .badge-blue {
+    @apply inline-block px-3 py-1 text-sm font-semibold;
+    background: #003A99;
+    color: #FFFFFF;
+    border-radius: 0;
+  }
+
+  /* Badge with green accent */
+  .badge-green {
+    @apply inline-block px-3 py-1 text-sm font-semibold;
+    background: #1A7F00;
+    color: #FFFFFF;
+    border-radius: 0;
+  }
+
+  /* Section backgrounds */
+  .section-light {
+    @apply py-16 md:py-20 lg:py-24;
+    background: #FFFFFF;
+  }
+
+  .section-gray {
+    @apply py-16 md:py-20 lg:py-24;
+    background: #F8F9FA;
+  }
+
+  .section-blue {
+    @apply py-16 md:py-20 lg:py-24;
+    background: #003A99;
+    color: #FFFFFF;
+  }
+
+  .section-blue .section-title {
+    color: #FFFFFF;
+  }
+
+  .section-blue .section-subtitle {
+    color: rgba(255, 255, 255, 0.8);
   }
 }
 
@@ -74,5 +219,47 @@
   }
   .animate-delay-500 {
     animation-delay: 0.5s;
+  }
+
+  /* Text utilities for brand colors */
+  .text-blue {
+    color: #003A99;
+  }
+  .text-green {
+    color: #1A7F00;
+  }
+  .text-yellow {
+    color: #FFEB00;
+  }
+  .text-red {
+    color: #E31E24;
+  }
+
+  /* Background utilities for brand colors */
+  .bg-blue {
+    background: #003A99;
+  }
+  .bg-green {
+    background: #1A7F00;
+  }
+  .bg-yellow {
+    background: #FFEB00;
+  }
+  .bg-red {
+    background: #E31E24;
+  }
+
+  /* Border utilities for brand colors */
+  .border-blue {
+    border-color: #003A99;
+  }
+  .border-green {
+    border-color: #1A7F00;
+  }
+  .border-yellow {
+    border-color: #FFEB00;
+  }
+  .border-red {
+    border-color: #E31E24;
   }
 }
