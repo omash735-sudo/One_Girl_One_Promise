@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 import { sql } from './db'
+import { NextRequest } from 'next/server'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'ogop-secret-key-change-in-production'
 
@@ -38,3 +39,11 @@ export function verifyToken(token: string) {
 export async function hashPassword(password: string) {
   return await bcrypt.hash(password, 10)
 }
+
+export function isAuthenticated(request: NextRequest) {
+  const token = request.headers.get('authorization')?.replace('Bearer ', '')
+  if (!token) return null
+  return verifyToken(token)
+}
+
+export default { verifyAdminCredentials, generateToken, verifyToken, hashPassword, isAuthenticated }
