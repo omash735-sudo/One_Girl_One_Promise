@@ -21,6 +21,11 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     const token = req.headers.get('authorization')?.replace('Bearer ', '')
+    
+    if (!token) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    
     const decoded = verifyToken(token)
     
     if (!decoded) {
@@ -42,6 +47,11 @@ export async function GET(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   try {
     const token = req.headers.get('authorization')?.replace('Bearer ', '')
+    
+    if (!token) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    
     const decoded = verifyToken(token)
     
     if (!decoded) {
@@ -64,6 +74,11 @@ export async function PUT(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   try {
     const token = req.headers.get('authorization')?.replace('Bearer ', '')
+    
+    if (!token) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    
     const decoded = verifyToken(token)
     
     if (!decoded) {
