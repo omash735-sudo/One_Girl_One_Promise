@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { sql } from '@/lib/db'
 import { verifyToken } from '@/lib/auth'
 
-// GET all content
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url)
@@ -27,7 +26,7 @@ export async function GET(req: NextRequest) {
     if (type === 'settings') {
       const settings = await sql`SELECT * FROM site_settings`
       const settingsObj: any = {}
-      settings.forEach(s => { settingsObj[s.key] = s.value })
+      settings.forEach((s: any) => { settingsObj[s.key] = s.value })
       return NextResponse.json(settingsObj)
     }
     
@@ -39,7 +38,6 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// UPDATE content (requires admin)
 export async function PUT(req: NextRequest) {
   try {
     const token = req.headers.get('authorization')?.replace('Bearer ', '')
