@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 import { Inter, Poppins } from 'next/font/google'
 import './globals.css'
-import dynamic from 'next/dynamic'
+import Navbar from '@/components/Navbar'
+import Footer from '@/components/Footer'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -13,17 +14,6 @@ const poppins = Poppins({
   subsets: ['latin'],
   variable: '--font-poppins',
   display: 'swap',
-})
-
-// Dynamically import components with SSR disabled to avoid build issues
-const Navbar = dynamic(() => import('@/components/Navbar'), { 
-  ssr: false,
-  loading: () => <div className="h-16 md:h-20" />
-})
-
-const Footer = dynamic(() => import('@/components/Footer'), { 
-  ssr: false,
-  loading: () => <div className="h-16" />
 })
 
 export const metadata: Metadata = {
