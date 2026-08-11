@@ -150,6 +150,68 @@ export async function initDB() {
     )
   `
 
+  await sql`
+    CREATE TABLE IF NOT EXISTS donations (
+      id SERIAL PRIMARY KEY,
+      donor_name VARCHAR(200),
+      donor_email VARCHAR(200),
+      amount DECIMAL(10,2),
+      currency VARCHAR(10) DEFAULT 'USD',
+      frequency VARCHAR(20) DEFAULT 'one-time',
+      payment_method VARCHAR(50),
+      is_anonymous BOOLEAN DEFAULT false,
+      status VARCHAR(50) DEFAULT 'pending',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS supply_donations (
+      id SERIAL PRIMARY KEY,
+      donor_name VARCHAR(200),
+      donor_email VARCHAR(200),
+      donor_phone VARCHAR(50),
+      donor_location VARCHAR(200),
+      item_type VARCHAR(100),
+      quantity VARCHAR(100),
+      item_condition VARCHAR(50),
+      delivery_method VARCHAR(50),
+      notes TEXT,
+      status VARCHAR(50) DEFAULT 'pending',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS fundraiser_requests (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(200),
+      email VARCHAR(200),
+      phone VARCHAR(50),
+      fundraiser_type VARCHAR(100),
+      goal VARCHAR(100),
+      event_date DATE,
+      location VARCHAR(200),
+      description TEXT,
+      notes TEXT,
+      status VARCHAR(50) DEFAULT 'pending',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS sponsorship_inquiries (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(200),
+      email VARCHAR(200),
+      phone VARCHAR(50),
+      sponsorship_tier VARCHAR(50),
+      message TEXT,
+      status VARCHAR(50) DEFAULT 'pending',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `
+
   const valuesCount = await sql`SELECT COUNT(*) FROM core_values`
   if (parseInt(valuesCount[0].count) === 0) {
     await sql`
