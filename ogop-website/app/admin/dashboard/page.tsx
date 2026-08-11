@@ -2,6 +2,31 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { 
+  Home, 
+  Info, 
+  BookOpen, 
+  Star, 
+  ChartLine, 
+  Envelope, 
+  LogOut,
+  HeartHandshake,
+  Package,
+  Megaphone,
+  GraduationCap,
+  Eye,
+  Target,
+  Users,
+  CheckCircle,
+  XCircle,
+  Clock
+} from 'lucide-react'
+
+interface Tab {
+  id: string
+  label: string
+  icon: React.ReactNode
+}
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('hero')
@@ -33,6 +58,12 @@ export default function AdminDashboard() {
   const [stories, setStories] = useState([])
   const [messages, setMessages] = useState([])
   
+  // Support data states
+  const [donations, setDonations] = useState([])
+  const [supplies, setSupplies] = useState([])
+  const [fundraisers, setFundraisers] = useState([])
+  const [sponsorships, setSponsorships] = useState([])
+  
   const [newProgram, setNewProgram] = useState({
     icon: 'fa-book-open',
     title: '',
@@ -46,6 +77,16 @@ export default function AdminDashboard() {
     story: '',
     achievement: ''
   })
+
+  const tabs: Tab[] = [
+    { id: 'hero', label: 'Hero', icon: <Home className="w-4 h-4" /> },
+    { id: 'about', label: 'About', icon: <Info className="w-4 h-4" /> },
+    { id: 'programs', label: 'Programs', icon: <BookOpen className="w-4 h-4" /> },
+    { id: 'stories', label: 'Stories', icon: <Star className="w-4 h-4" /> },
+    { id: 'stats', label: 'Impact Stats', icon: <ChartLine className="w-4 h-4" /> },
+    { id: 'messages', label: 'Messages', icon: <Envelope className="w-4 h-4" /> },
+    { id: 'support', label: 'Support', icon: <HeartHandshake className="w-4 h-4" /> },
+  ]
 
   useEffect(() => {
     const token = localStorage.getItem('ogop_admin_token')
@@ -93,10 +134,39 @@ export default function AdminDashboard() {
       const messagesData = await messagesRes.json()
       setMessages(messagesData)
       
+      // Load support data
+      const supportRes = await fetch('/api/admin/support?type=all', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      const supportData = await supportRes.json()
+      if (supportData.success) {
+        setDonations(supportData.donations || [])
+        setSupplies(supportData.supplies || [])
+        setFundraisers(supportData.fundraisers || [])
+        setSponsorships(supportData.sponsorships || [])
+      }
+      
       setLoading(false)
     } catch (error) {
       console.error('Load error:', error)
       setLoading(false)
+    }
+  }
+
+  const updateSupportStatus = async (id: string, type: string, status: string) => {
+    try {
+      const token = localStorage.getItem('ogop_admin_token')
+      await fetch(`/api/admin/support?id=${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ type, status })
+      })
+      loadAllData()
+    } catch (error) {
+      console.error('Update error:', error)
     }
   }
 
@@ -193,258 +263,325 @@ export default function AdminDashboard() {
     router.push('/admin/login')
   }
 
+  const getStatusBadge = (status: string) => {
+    const styles: Record<string, string> = {
+      pending: 'bg-[#FFEB00] text-[#1A1A1A]',
+      reviewed: 'bg-[#003A99] text-white',
+      contacted: 'bg-[#1A7F00] text-white',
+      completed: 'bg-[#1A7F00] text-white',
+      cancelled: 'bg-[#E31E24] text-white'
+    }
+    return styles[status] || 'bg-[#E0E2E6] text-[#1A1A1A]'
+  }
+
   if (loading) {
-    return <div className="admin-loading">Loading...</div>
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[#F8F9FA]">
+        <div className="text-[#003A99] text-xl font-semibold">Loading...</div>
+      </div>
+    )
   }
 
   return (
-    <div className="admin-dashboard">
-      <div className="admin-sidebar">
-        <div className="admin-logo">
-          <h3>OGOP Admin</h3>
+    <div className="flex min-h-screen bg-[#F8F9FA]">
+      {/* Sidebar */}
+      <div className="w-64 bg-[#1A1A1A] text-white fixed h-full overflow-y-auto">
+        <div className="p-6 border-b border-[#33373F]">
+          <h3 className="text-xl font-bold text-[#FFEB00]">OGOP Admin</h3>
+          <p className="text-xs text-gray-400 mt-1">One Girl One Promise</p>
         </div>
-        <nav>
-          <button onClick={() => setActiveTab('hero')} className={activeTab === 'hero' ? 'active' : ''}>
-            <i className="fas fa-home"></i> Hero Section
-          </button>
-          <button onClick={() => setActiveTab('about')} className={activeTab === 'about' ? 'active' : ''}>
-            <i className="fas fa-info-circle"></i> About Page
-          </button>
-          <button onClick={() => setActiveTab('programs')} className={activeTab === 'programs' ? 'active' : ''}>
-            <i className="fas fa-book"></i> Programs
-          </button>
-          <button onClick={() => setActiveTab('stories')} className={activeTab === 'stories' ? 'active' : ''}>
-            <i className="fas fa-star"></i> Success Stories
-          </button>
-          <button onClick={() => setActiveTab('stats')} className={activeTab === 'stats' ? 'active' : ''}>
-            <i className="fas fa-chart-line"></i> Impact Stats
-          </button>
-          <button onClick={() => setActiveTab('messages')} className={activeTab === 'messages' ? 'active' : ''}>
-            <i className="fas fa-envelope"></i> Messages ({messages.length})
-          </button>
+        
+        <nav className="p-4 space-y-1">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors ${
+                activeTab === tab.id
+                  ? 'bg-[#003A99] text-white'
+                  : 'text-gray-300 hover:bg-[#33373F] hover:text-white'
+              }`}
+            >
+              {tab.icon}
+              {tab.label}
+              {tab.id === 'messages' && messages.length > 0 && (
+                <span className="ml-auto bg-[#E31E24] text-white text-xs px-2 py-0.5">
+                  {messages.length}
+                </span>
+              )}
+              {tab.id === 'support' && (donations.length + supplies.length + fundraisers.length + sponsorships.length) > 0 && (
+                <span className="ml-auto bg-[#FFEB00] text-[#1A1A1A] text-xs px-2 py-0.5">
+                  {donations.length + supplies.length + fundraisers.length + sponsorships.length}
+                </span>
+              )}
+            </button>
+          ))}
         </nav>
-        <button onClick={logout} className="logout-btn">
-          <i className="fas fa-sign-out-alt"></i> Logout
-        </button>
+        
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-[#33373F]">
+          <button
+            onClick={logout}
+            className="w-full flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-300 hover:bg-[#33373F] hover:text-white transition-colors"
+          >
+            <LogOut className="w-4 h-4" />
+            Logout
+          </button>
+        </div>
       </div>
 
-      <div className="admin-content">
+      {/* Main Content */}
+      <div className="ml-64 flex-1 p-8">
         {/* Hero Tab */}
         {activeTab === 'hero' && (
-          <div className="admin-section">
-            <h2>Hero Section</h2>
-            <div className="form-group">
-              <label>Title</label>
-              <input 
-                type="text" 
-                value={heroContent.title} 
-                onChange={(e) => setHeroContent({...heroContent, title: e.target.value})}
-              />
-            </div>
-            <div className="form-group">
-              <label>Subtitle</label>
-              <textarea 
-                value={heroContent.subtitle} 
-                onChange={(e) => setHeroContent({...heroContent, subtitle: e.target.value})}
-              />
-            </div>
-            <div className="form-row">
-              <div className="form-group">
-                <label>Button 1 Text</label>
+          <div className="bg-white border border-[#E0E2E6] p-6">
+            <h2 className="text-2xl font-bold text-[#1A1A1A] mb-6">Hero Section</h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-[#1A1A1A] mb-1">Title</label>
                 <input 
                   type="text" 
-                  value={heroContent.button1Text} 
-                  onChange={(e) => setHeroContent({...heroContent, button1Text: e.target.value})}
+                  value={heroContent.title} 
+                  onChange={(e) => setHeroContent({...heroContent, title: e.target.value})}
+                  className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
                 />
               </div>
-              <div className="form-group">
-                <label>Button 1 Link</label>
+              <div>
+                <label className="block text-sm font-medium text-[#1A1A1A] mb-1">Subtitle</label>
+                <textarea 
+                  rows={3}
+                  value={heroContent.subtitle} 
+                  onChange={(e) => setHeroContent({...heroContent, subtitle: e.target.value})}
+                  className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                />
+              </div>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-[#1A1A1A] mb-1">Button 1 Text</label>
+                  <input 
+                    type="text" 
+                    value={heroContent.button1Text} 
+                    onChange={(e) => setHeroContent({...heroContent, button1Text: e.target.value})}
+                    className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[#1A1A1A] mb-1">Button 1 Link</label>
+                  <input 
+                    type="text" 
+                    value={heroContent.button1Link} 
+                    onChange={(e) => setHeroContent({...heroContent, button1Link: e.target.value})}
+                    className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                  />
+                </div>
+              </div>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-[#1A1A1A] mb-1">Button 2 Text</label>
+                  <input 
+                    type="text" 
+                    value={heroContent.button2Text} 
+                    onChange={(e) => setHeroContent({...heroContent, button2Text: e.target.value})}
+                    className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[#1A1A1A] mb-1">Button 2 Link</label>
+                  <input 
+                    type="text" 
+                    value={heroContent.button2Link} 
+                    onChange={(e) => setHeroContent({...heroContent, button2Link: e.target.value})}
+                    className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[#1A1A1A] mb-1">Background Image URL</label>
                 <input 
                   type="text" 
-                  value={heroContent.button1Link} 
-                  onChange={(e) => setHeroContent({...heroContent, button1Link: e.target.value})}
+                  value={heroContent.backgroundImage} 
+                  onChange={(e) => setHeroContent({...heroContent, backgroundImage: e.target.value})}
+                  className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
                 />
               </div>
+              <button onClick={saveHero} disabled={saving} className="bg-[#1A7F00] text-white px-6 py-2 font-bold hover:bg-[#136000] transition-colors disabled:opacity-50">
+                {saving ? 'Saving...' : 'Save Changes'}
+              </button>
             </div>
-            <div className="form-row">
-              <div className="form-group">
-                <label>Button 2 Text</label>
-                <input 
-                  type="text" 
-                  value={heroContent.button2Text} 
-                  onChange={(e) => setHeroContent({...heroContent, button2Text: e.target.value})}
-                />
-              </div>
-              <div className="form-group">
-                <label>Button 2 Link</label>
-                <input 
-                  type="text" 
-                  value={heroContent.button2Link} 
-                  onChange={(e) => setHeroContent({...heroContent, button2Link: e.target.value})}
-                />
-              </div>
-            </div>
-            <div className="form-group">
-              <label>Background Image URL</label>
-              <input 
-                type="text" 
-                value={heroContent.backgroundImage} 
-                onChange={(e) => setHeroContent({...heroContent, backgroundImage: e.target.value})}
-              />
-            </div>
-            <button onClick={saveHero} disabled={saving} className="save-btn">
-              {saving ? 'Saving...' : 'Save Changes'}
-            </button>
           </div>
         )}
 
         {/* About Tab */}
         {activeTab === 'about' && (
-          <div className="admin-section">
-            <h2>About Page</h2>
-            <div className="form-group">
-              <label>Scripture</label>
-              <textarea 
-                value={aboutContent.scripture} 
-                onChange={(e) => setAboutContent({...aboutContent, scripture: e.target.value})}
-              />
+          <div className="bg-white border border-[#E0E2E6] p-6">
+            <h2 className="text-2xl font-bold text-[#1A1A1A] mb-6">About Page</h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-[#1A1A1A] mb-1">Scripture</label>
+                <textarea 
+                  rows={3}
+                  value={aboutContent.scripture} 
+                  onChange={(e) => setAboutContent({...aboutContent, scripture: e.target.value})}
+                  className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[#1A1A1A] mb-1">Description</label>
+                <textarea 
+                  rows={5}
+                  value={aboutContent.description} 
+                  onChange={(e) => setAboutContent({...aboutContent, description: e.target.value})}
+                  className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[#1A1A1A] mb-1">Vision</label>
+                <textarea 
+                  rows={3}
+                  value={aboutContent.vision} 
+                  onChange={(e) => setAboutContent({...aboutContent, vision: e.target.value})}
+                  className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[#1A1A1A] mb-1">Mission</label>
+                <textarea 
+                  rows={3}
+                  value={aboutContent.mission} 
+                  onChange={(e) => setAboutContent({...aboutContent, mission: e.target.value})}
+                  className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                />
+              </div>
+              <button onClick={saveAbout} disabled={saving} className="bg-[#1A7F00] text-white px-6 py-2 font-bold hover:bg-[#136000] transition-colors disabled:opacity-50">
+                {saving ? 'Saving...' : 'Save Changes'}
+              </button>
             </div>
-            <div className="form-group">
-              <label>Description</label>
-              <textarea 
-                rows={5}
-                value={aboutContent.description} 
-                onChange={(e) => setAboutContent({...aboutContent, description: e.target.value})}
-              />
-            </div>
-            <div className="form-group">
-              <label>Vision</label>
-              <textarea 
-                rows={3}
-                value={aboutContent.vision} 
-                onChange={(e) => setAboutContent({...aboutContent, vision: e.target.value})}
-              />
-            </div>
-            <div className="form-group">
-              <label>Mission</label>
-              <textarea 
-                rows={3}
-                value={aboutContent.mission} 
-                onChange={(e) => setAboutContent({...aboutContent, mission: e.target.value})}
-              />
-            </div>
-            <button onClick={saveAbout} disabled={saving} className="save-btn">
-              {saving ? 'Saving...' : 'Save Changes'}
-            </button>
           </div>
         )}
 
         {/* Programs Tab */}
         {activeTab === 'programs' && (
-          <div className="admin-section">
-            <h2>Programs</h2>
+          <div className="bg-white border border-[#E0E2E6] p-6">
+            <h2 className="text-2xl font-bold text-[#1A1A1A] mb-6">Programs</h2>
             
-            <div className="add-form">
-              <h3>Add New Program</h3>
-              <div className="form-group">
+            <div className="bg-[#F8F9FA] p-4 border border-[#E0E2E6] mb-6">
+              <h3 className="font-bold text-[#1A1A1A] mb-4">Add New Program</h3>
+              <div className="space-y-3">
                 <input 
                   placeholder="Icon (e.g., fa-book-open)"
                   value={newProgram.icon}
                   onChange={(e) => setNewProgram({...newProgram, icon: e.target.value})}
+                  className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
                 />
-              </div>
-              <div className="form-group">
                 <input 
                   placeholder="Title"
                   value={newProgram.title}
                   onChange={(e) => setNewProgram({...newProgram, title: e.target.value})}
+                  className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
                 />
-              </div>
-              <div className="form-group">
                 <textarea 
                   placeholder="Short Description"
                   rows={2}
                   value={newProgram.description}
                   onChange={(e) => setNewProgram({...newProgram, description: e.target.value})}
+                  className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
                 />
-              </div>
-              <div className="form-group">
                 <textarea 
                   placeholder="Long Description"
                   rows={3}
                   value={newProgram.longDescription}
                   onChange={(e) => setNewProgram({...newProgram, longDescription: e.target.value})}
+                  className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
                 />
+                <button onClick={addProgram} className="bg-[#003A99] text-white px-6 py-2 font-bold hover:bg-[#002A70] transition-colors">
+                  Add Program
+                </button>
               </div>
-              <button onClick={addProgram} className="add-btn">Add Program</button>
             </div>
 
-            <div className="items-list">
-              <h3>Existing Programs</h3>
-              {programs.map((program: any) => (
-                <div key={program.id} className="list-item">
-                  <div>
-                    <strong>{program.title}</strong>
-                    <p>{program.description}</p>
+            <div>
+              <h3 className="font-bold text-[#1A1A1A] mb-4">Existing Programs</h3>
+              <div className="space-y-2">
+                {programs.map((program: any) => (
+                  <div key={program.id} className="flex items-center justify-between border border-[#E0E2E6] p-4 bg-white">
+                    <div>
+                      <strong className="text-[#1A1A1A]">{program.title}</strong>
+                      <p className="text-sm text-[#4A4F59]">{program.description}</p>
+                    </div>
+                    <button onClick={() => deleteProgram(program.id)} className="bg-[#E31E24] text-white px-3 py-1 text-sm hover:bg-[#C41A1E] transition-colors">
+                      Delete
+                    </button>
                   </div>
-                  <button onClick={() => deleteProgram(program.id)} className="delete-btn">
-                    <i className="fas fa-trash"></i>
-                  </button>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         )}
 
         {/* Stories Tab */}
         {activeTab === 'stories' && (
-          <div className="admin-section">
-            <h2>Success Stories</h2>
+          <div className="bg-white border border-[#E0E2E6] p-6">
+            <h2 className="text-2xl font-bold text-[#1A1A1A] mb-6">Success Stories</h2>
             
-            <div className="add-form">
-              <h3>Add New Story</h3>
-              <div className="form-group">
+            <div className="bg-[#F8F9FA] p-4 border border-[#E0E2E6] mb-6">
+              <h3 className="font-bold text-[#1A1A1A] mb-4">Add New Story</h3>
+              <div className="space-y-3">
                 <input 
                   placeholder="Name"
                   value={newStory.name}
                   onChange={(e) => setNewStory({...newStory, name: e.target.value})}
+                  className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
                 />
-              </div>
-              <div className="form-group">
                 <input 
                   type="number"
                   placeholder="Age"
                   value={newStory.age}
                   onChange={(e) => setNewStory({...newStory, age: e.target.value})}
+                  className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
                 />
-              </div>
-              <div className="form-group">
                 <textarea 
                   placeholder="Their Story"
                   rows={3}
                   value={newStory.story}
                   onChange={(e) => setNewStory({...newStory, story: e.target.value})}
+                  className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
                 />
-              </div>
-              <div className="form-group">
                 <input 
                   placeholder="Achievement"
                   value={newStory.achievement}
                   onChange={(e) => setNewStory({...newStory, achievement: e.target.value})}
+                  className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
                 />
+                <button onClick={addStory} className="bg-[#003A99] text-white px-6 py-2 font-bold hover:bg-[#002A70] transition-colors">
+                  Add Story
+                </button>
               </div>
-              <button onClick={addStory} className="add-btn">Add Story</button>
             </div>
 
-            <div className="items-list">
-              <h3>Existing Stories</h3>
-              {stories.map((story: any) => (
-                <div key={story.id} className="list-item">
-                  <div>
-                    <strong>{story.name}, {story.age}</strong>
-                    <p>{story.story.substring(0, 100)}...</p>
-                    <small>Achievement: {story.achievement}</small>
+            <div>
+              <h3 className="font-bold text-[#1A1A1A] mb-4">Existing Stories</h3>
+              <div className="space-y-2">
+                {stories.map((story: any) => (
+                  <div key={story.id} className="border border-[#E0E2E6] p-4 bg-white">
+                    <strong className="text-[#1A1A1A]">{story.name}, {story.age}</strong>
+                    <p className="text-sm text-[#4A4F59] mt-1">{story.story.substring(0, 150)}...</p>
+                    <span className="text-xs text-[#1A7F00] font-medium">Achievement: {story.achievement}</span>
                   </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Stats Tab */}
+        {activeTab === 'stats' && (
+          <div className="bg-white border border-[#E0E2E6] p-6">
+            <h2 className="text-2xl font-bold text-[#1A1A1A] mb-6">Impact Stats</h2>
+            <p className="text-[#4A4F59] mb-4">Stats are managed in the database. Contact your developer to update.</p>
+            <div className="grid md:grid-cols-2 gap-4">
+              {stats.map((stat: any) => (
+                <div key={stat.id} className="border border-[#E0E2E6] p-4 bg-[#F8F9FA]">
+                  <div className="text-2xl font-bold text-[#003A99]">{stat.number}{stat.suffix}</div>
+                  <div className="text-sm text-[#4A4F59]">{stat.label}</div>
                 </div>
               ))}
             </div>
@@ -453,157 +590,181 @@ export default function AdminDashboard() {
 
         {/* Messages Tab */}
         {activeTab === 'messages' && (
-          <div className="admin-section">
-            <h2>Contact Messages</h2>
+          <div className="bg-white border border-[#E0E2E6] p-6">
+            <h2 className="text-2xl font-bold text-[#1A1A1A] mb-6">Contact Messages</h2>
             {messages.length === 0 ? (
-              <p>No messages yet</p>
+              <p className="text-[#4A4F59]">No messages yet</p>
             ) : (
-              messages.map((msg: any) => (
-                <div key={msg.id} className="message-card">
-                  <div className="message-header">
-                    <strong>{msg.name}</strong> ({msg.email})
-                    <small>{new Date(msg.created_at).toLocaleDateString()}</small>
+              <div className="space-y-4">
+                {messages.map((msg: any) => (
+                  <div key={msg.id} className="border border-[#E0E2E6] p-4 bg-[#F8F9FA]">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <strong className="text-[#1A1A1A]">{msg.name}</strong>
+                        <span className="text-sm text-[#4A4F59] ml-2">{msg.email}</span>
+                      </div>
+                      <span className="text-xs text-[#4A4F59]">{new Date(msg.created_at).toLocaleDateString()}</span>
+                    </div>
+                    <div className="font-medium text-[#1A1A1A] mt-2">{msg.subject}</div>
+                    <div className="text-sm text-[#4A4F59] mt-1">{msg.message}</div>
                   </div>
-                  <div className="message-subject">{msg.subject}</div>
-                  <div className="message-body">{msg.message}</div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Support Tab */}
+        {activeTab === 'support' && (
+          <div className="bg-white border border-[#E0E2E6] p-6">
+            <h2 className="text-2xl font-bold text-[#1A1A1A] mb-6">Support Submissions</h2>
+            
+            {/* Donations */}
+            {donations.length > 0 && (
+              <div className="mb-8">
+                <h3 className="font-bold text-[#003A99] mb-4 flex items-center gap-2">
+                  <HeartHandshake className="w-5 h-5" /> Donations ({donations.length})
+                </h3>
+                <div className="space-y-3">
+                  {donations.map((donation: any) => (
+                    <div key={donation.id} className="border border-[#E0E2E6] p-4 bg-[#F8F9FA]">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <strong className="text-[#1A1A1A]">{donation.donor_name}</strong>
+                          <span className="text-sm text-[#4A4F59] ml-2">{donation.donor_email}</span>
+                        </div>
+                        <span className="font-bold text-[#1A7F00]">${donation.amount}</span>
+                      </div>
+                      <div className="text-sm text-[#4A4F59] mt-1">
+                        {donation.frequency} · {donation.payment_method || 'Not specified'}
+                      </div>
+                      <div className="flex items-center justify-between mt-2">
+                        <span className={`text-xs px-2 py-0.5 font-medium ${getStatusBadge(donation.status)}`}>
+                          {donation.status}
+                        </span>
+                        <div className="flex gap-2">
+                          <button onClick={() => updateSupportStatus(donation.id, 'donation', 'reviewed')} className="text-xs text-[#003A99] hover:underline">Review</button>
+                          <button onClick={() => updateSupportStatus(donation.id, 'donation', 'contacted')} className="text-xs text-[#1A7F00] hover:underline">Contact</button>
+                          <button onClick={() => updateSupportStatus(donation.id, 'donation', 'completed')} className="text-xs text-[#1A7F00] hover:underline">Complete</button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))
+              </div>
+            )}
+
+            {/* Supplies */}
+            {supplies.length > 0 && (
+              <div className="mb-8">
+                <h3 className="font-bold text-[#003A99] mb-4 flex items-center gap-2">
+                  <Package className="w-5 h-5" /> Supplies Donations ({supplies.length})
+                </h3>
+                <div className="space-y-3">
+                  {supplies.map((supply: any) => (
+                    <div key={supply.id} className="border border-[#E0E2E6] p-4 bg-[#F8F9FA]">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <strong className="text-[#1A1A1A]">{supply.donor_name}</strong>
+                          <span className="text-sm text-[#4A4F59] ml-2">{supply.donor_email}</span>
+                        </div>
+                        <span className="text-sm font-medium text-[#003A99]">{supply.item_type}</span>
+                      </div>
+                      <div className="text-sm text-[#4A4F59] mt-1">
+                        Quantity: {supply.quantity} · Condition: {supply.item_condition}
+                      </div>
+                      {supply.notes && <div className="text-sm text-[#4A4F59] mt-1">{supply.notes}</div>}
+                      <div className="flex items-center justify-between mt-2">
+                        <span className={`text-xs px-2 py-0.5 font-medium ${getStatusBadge(supply.status)}`}>
+                          {supply.status}
+                        </span>
+                        <div className="flex gap-2">
+                          <button onClick={() => updateSupportStatus(supply.id, 'supply', 'reviewed')} className="text-xs text-[#003A99] hover:underline">Review</button>
+                          <button onClick={() => updateSupportStatus(supply.id, 'supply', 'contacted')} className="text-xs text-[#1A7F00] hover:underline">Contact</button>
+                          <button onClick={() => updateSupportStatus(supply.id, 'supply', 'completed')} className="text-xs text-[#1A7F00] hover:underline">Complete</button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Fundraisers */}
+            {fundraisers.length > 0 && (
+              <div className="mb-8">
+                <h3 className="font-bold text-[#003A99] mb-4 flex items-center gap-2">
+                  <Megaphone className="w-5 h-5" /> Fundraiser Requests ({fundraisers.length})
+                </h3>
+                <div className="space-y-3">
+                  {fundraisers.map((fundraiser: any) => (
+                    <div key={fundraiser.id} className="border border-[#E0E2E6] p-4 bg-[#F8F9FA]">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <strong className="text-[#1A1A1A]">{fundraiser.name}</strong>
+                          <span className="text-sm text-[#4A4F59] ml-2">{fundraiser.email}</span>
+                        </div>
+                        <span className="text-sm font-medium text-[#003A99]">{fundraiser.fundraiser_type}</span>
+                      </div>
+                      <div className="text-sm text-[#4A4F59] mt-1">
+                        Goal: ${fundraiser.goal} · Date: {fundraiser.event_date ? new Date(fundraiser.event_date).toLocaleDateString() : 'TBD'}
+                      </div>
+                      {fundraiser.description && <div className="text-sm text-[#4A4F59] mt-1">{fundraiser.description}</div>}
+                      <div className="flex items-center justify-between mt-2">
+                        <span className={`text-xs px-2 py-0.5 font-medium ${getStatusBadge(fundraiser.status)}`}>
+                          {fundraiser.status}
+                        </span>
+                        <div className="flex gap-2">
+                          <button onClick={() => updateSupportStatus(fundraiser.id, 'fundraiser', 'reviewed')} className="text-xs text-[#003A99] hover:underline">Review</button>
+                          <button onClick={() => updateSupportStatus(fundraiser.id, 'fundraiser', 'contacted')} className="text-xs text-[#1A7F00] hover:underline">Contact</button>
+                          <button onClick={() => updateSupportStatus(fundraiser.id, 'fundraiser', 'completed')} className="text-xs text-[#1A7F00] hover:underline">Complete</button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Sponsorships */}
+            {sponsorships.length > 0 && (
+              <div className="mb-8">
+                <h3 className="font-bold text-[#003A99] mb-4 flex items-center gap-2">
+                  <GraduationCap className="w-5 h-5" /> Sponsorship Inquiries ({sponsorships.length})
+                </h3>
+                <div className="space-y-3">
+                  {sponsorships.map((sponsorship: any) => (
+                    <div key={sponsorship.id} className="border border-[#E0E2E6] p-4 bg-[#F8F9FA]">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <strong className="text-[#1A1A1A]">{sponsorship.name}</strong>
+                          <span className="text-sm text-[#4A4F59] ml-2">{sponsorship.email}</span>
+                        </div>
+                        <span className="text-sm font-medium text-[#1A7F00]">{sponsorship.sponsorship_tier}</span>
+                      </div>
+                      {sponsorship.message && <div className="text-sm text-[#4A4F59] mt-1">{sponsorship.message}</div>}
+                      <div className="flex items-center justify-between mt-2">
+                        <span className={`text-xs px-2 py-0.5 font-medium ${getStatusBadge(sponsorship.status)}`}>
+                          {sponsorship.status}
+                        </span>
+                        <div className="flex gap-2">
+                          <button onClick={() => updateSupportStatus(sponsorship.id, 'sponsorship', 'reviewed')} className="text-xs text-[#003A99] hover:underline">Review</button>
+                          <button onClick={() => updateSupportStatus(sponsorship.id, 'sponsorship', 'contacted')} className="text-xs text-[#1A7F00] hover:underline">Contact</button>
+                          <button onClick={() => updateSupportStatus(sponsorship.id, 'sponsorship', 'completed')} className="text-xs text-[#1A7F00] hover:underline">Complete</button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {donations.length === 0 && supplies.length === 0 && fundraisers.length === 0 && sponsorships.length === 0 && (
+              <p className="text-[#4A4F59]">No support submissions yet</p>
             )}
           </div>
         )}
       </div>
-
-      <style jsx>{`
-        .admin-dashboard {
-          display: flex;
-          min-height: 100vh;
-        }
-        .admin-sidebar {
-          width: 280px;
-          background: #2C3E50;
-          color: white;
-          position: fixed;
-          height: 100vh;
-          overflow-y: auto;
-        }
-        .admin-logo {
-          padding: 20px;
-          border-bottom: 1px solid #34495e;
-          text-align: center;
-        }
-        .admin-sidebar nav button {
-          width: 100%;
-          padding: 15px 20px;
-          background: none;
-          border: none;
-          color: white;
-          text-align: left;
-          cursor: pointer;
-          font-size: 16px;
-          transition: all 0.3s;
-        }
-        .admin-sidebar nav button:hover,
-        .admin-sidebar nav button.active {
-          background: #E91E63;
-        }
-        .logout-btn {
-          position: absolute;
-          bottom: 20px;
-          width: calc(100% - 40px);
-          margin: 0 20px;
-          padding: 12px;
-          background: #c0392b;
-          color: white;
-          border: none;
-          border-radius: 5px;
-          cursor: pointer;
-        }
-        .admin-content {
-          margin-left: 280px;
-          padding: 30px;
-          width: calc(100% - 280px);
-        }
-        .admin-section {
-          background: white;
-          padding: 25px;
-          border-radius: 10px;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .form-group {
-          margin-bottom: 20px;
-        }
-        .form-group label {
-          display: block;
-          margin-bottom: 8px;
-          font-weight: 500;
-        }
-        .form-group input,
-        .form-group textarea {
-          width: 100%;
-          padding: 10px;
-          border: 1px solid #ddd;
-          border-radius: 5px;
-        }
-        .form-row {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 20px;
-        }
-        .save-btn, .add-btn {
-          background: #E91E63;
-          color: white;
-          padding: 10px 20px;
-          border: none;
-          border-radius: 5px;
-          cursor: pointer;
-        }
-        .add-form {
-          background: #f8f9fa;
-          padding: 20px;
-          border-radius: 10px;
-          margin-bottom: 30px;
-        }
-        .items-list {
-          margin-top: 20px;
-        }
-        .list-item {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 15px;
-          border-bottom: 1px solid #eee;
-        }
-        .delete-btn {
-          background: #e74c3c;
-          color: white;
-          border: none;
-          padding: 5px 10px;
-          border-radius: 5px;
-          cursor: pointer;
-        }
-        .message-card {
-          background: #f8f9fa;
-          padding: 15px;
-          border-radius: 8px;
-          margin-bottom: 15px;
-        }
-        .message-header {
-          display: flex;
-          justify-content: space-between;
-          margin-bottom: 10px;
-        }
-        .message-subject {
-          font-weight: bold;
-          margin-bottom: 10px;
-        }
-        .admin-loading {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 100vh;
-          font-size: 18px;
-        }
-      `}</style>
     </div>
   )
 }
