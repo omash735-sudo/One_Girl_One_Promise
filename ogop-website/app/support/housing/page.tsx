@@ -13,6 +13,8 @@ export default function HousingPage() {
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
 
+  const EXCHANGE_RATE = 4500
+
   const housingOptions = [
     { amount: '30', label: 'Monthly Housing' },
     { amount: '90', label: 'Term Housing' },
@@ -83,6 +85,11 @@ export default function HousingPage() {
         </div>
       </section>
 
+      {/* Exchange Rate Notice */}
+      <div className="bg-[#FFEB00] text-[#1A1A1A] py-2 px-4 text-center text-sm font-medium">
+        Exchange Rate: 1 USD ≈ 4,500 MK (Malawi Kwacha)
+      </div>
+
       {/* Why It Matters */}
       <section className="py-12 bg-white border-b border-[#E0E2E6]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -145,30 +152,36 @@ export default function HousingPage() {
                 </p>
 
                 <div className="space-y-3 max-w-xs mx-auto mb-6">
-                  {housingOptions.map((option) => (
-                    <div 
-                      key={option.amount}
-                      className={`flex justify-between items-center border p-3 cursor-pointer transition-colors ${
-                        selectedAmount === option.amount 
-                          ? 'border-[#003A99] bg-[#F8F9FA]' 
-                          : 'border-[#E0E2E6] hover:border-[#003A99]'
-                      }`}
-                      onClick={() => setSelectedAmount(option.amount)}
-                    >
-                      <div className="flex items-center gap-3">
-                        <input
-                          type="radio"
-                          name="housingAmount"
-                          value={option.amount}
-                          checked={selectedAmount === option.amount}
-                          onChange={() => setSelectedAmount(option.amount)}
-                          className="w-4 h-4 accent-[#003A99]"
-                        />
-                        <span className="font-medium text-[#1A1A1A]">{option.label}</span>
+                  {housingOptions.map((option) => {
+                    const mkAmount = Math.round(parseFloat(option.amount) * EXCHANGE_RATE)
+                    return (
+                      <div 
+                        key={option.amount}
+                        className={`flex justify-between items-center border p-3 cursor-pointer transition-colors ${
+                          selectedAmount === option.amount 
+                            ? 'border-[#003A99] bg-[#F8F9FA]' 
+                            : 'border-[#E0E2E6] hover:border-[#003A99]'
+                        }`}
+                        onClick={() => setSelectedAmount(option.amount)}
+                      >
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="radio"
+                            name="housingAmount"
+                            value={option.amount}
+                            checked={selectedAmount === option.amount}
+                            onChange={() => setSelectedAmount(option.amount)}
+                            className="w-4 h-4 accent-[#003A99]"
+                          />
+                          <div>
+                            <span className="font-medium text-[#1A1A1A]">{option.label}</span>
+                            <div className="text-xs text-[#4A4F59]">MK {mkAmount.toLocaleString()}</div>
+                          </div>
+                        </div>
+                        <span className="font-bold text-[#003A99]">${option.amount}</span>
                       </div>
-                      <span className="font-bold text-[#003A99]">${option.amount}</span>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
 
                 <div className="mb-4">
