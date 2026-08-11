@@ -179,4 +179,163 @@ export default function PartnerPage() {
             <div className="border border-[#E0E2E6] p-4 bg-white flex items-start gap-3">
               <CheckCircle className="w-5 h-5 text-[#1A7F00] flex-shrink-0 mt-1" />
               <div>
-                <h4 className="font-bold text-[#1A1A1A]">Brand Visibility</h4
+                <h4 className="font-bold text-[#1A1A1A]">Brand Visibility</h4>
+                <p className="text-sm text-[#4A4F59]">Recognition in communications</p>
+              </div>
+            </div>
+            <div className="border border-[#E0E2E6] p-4 bg-white flex items-start gap-3">
+              <CheckCircle className="w-5 h-5 text-[#1A7F00] flex-shrink-0 mt-1" />
+              <div>
+                <h4 className="font-bold text-[#1A1A1A]">Impact Reports</h4>
+                <p className="text-sm text-[#4A4F59]">Quarterly updates with photos</p>
+              </div>
+            </div>
+            <div className="border border-[#E0E2E6] p-4 bg-white flex items-start gap-3">
+              <CheckCircle className="w-5 h-5 text-[#1A7F00] flex-shrink-0 mt-1" />
+              <div>
+                <h4 className="font-bold text-[#1A1A1A]">Employee Engagement</h4>
+                <p className="text-sm text-[#4A4F59]">Volunteer mentorship opportunities</p>
+              </div>
+            </div>
+            <div className="border border-[#E0E2E6] p-4 bg-white flex items-start gap-3">
+              <CheckCircle className="w-5 h-5 text-[#1A7F00] flex-shrink-0 mt-1" />
+              <div>
+                <h4 className="font-bold text-[#1A1A1A]">Tax Benefits</h4>
+                <p className="text-sm text-[#4A4F59]">Certificate of Partnership</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 md:py-20">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          {submitted ? (
+            <div className="border border-[#E0E2E6] p-6 md:p-8 bg-white text-center">
+              <div className="bg-[#1A7F00] text-white p-6 mb-6">
+                <CheckCircle className="w-12 h-12 mx-auto mb-3" />
+                <h3 className="text-2xl font-bold">Thank You!</h3>
+                <p className="text-white/80 mt-2">Your partnership inquiry has been submitted. OGOP will contact you shortly.</p>
+              </div>
+              <Link href="/" className="inline-block bg-[#003A99] text-white px-6 py-3 font-bold hover:bg-[#002A70] transition-colors">
+                Return Home
+              </Link>
+            </div>
+          ) : (
+            <div className="border border-[#E0E2E6] p-6 md:p-8 bg-white">
+              <h3 className="text-xl font-bold text-[#1A1A1A] mb-4">
+                Become a <span className="text-[#003A99]">Partner</span>
+              </h3>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-[#1A1A1A] mb-1">Organization Name</label>
+                  <input
+                    type="text"
+                    name="organizationName"
+                    value={formData.organizationName}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[#1A1A1A] mb-1">Contact Person</label>
+                  <input
+                    type="text"
+                    name="contactPerson"
+                    value={formData.contactPerson}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                  />
+                </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-[#1A1A1A] mb-1">Email</label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-[#1A1A1A] mb-1">Phone</label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[#1A1A1A] mb-1">Partner Type</label>
+                  <select
+                    name="partnerType"
+                    value={formData.partnerType}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99] bg-white"
+                  >
+                    <option value="">Select partner type...</option>
+                    {partnerTypes.map((type) => (
+                      <option key={type.id} value={type.title}>{type.title}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[#1A1A1A] mb-1">What can you offer?</label>
+                  <textarea
+                    name="proposedPartnership"
+                    rows={3}
+                    value={formData.proposedPartnership}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99] resize-vertical"
+                    placeholder="Describe how you'd like to partner with OGOP..."
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[#1A1A1A] mb-1">Additional Information</label>
+                  <textarea
+                    name="message"
+                    rows={2}
+                    value={formData.message}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99] resize-vertical"
+                    placeholder="Any other details..."
+                  />
+                </div>
+
+                {error && (
+                  <div className="bg-[#E31E24] text-white px-4 py-2 text-center text-sm">
+                    {error}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="w-full bg-[#1A7F00] text-white py-3 font-bold hover:bg-[#136000] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {submitting ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Submitting...
+                    </>
+                  ) : (
+                    'Submit Partnership Inquiry'
+                  )}
+                </button>
+              </form>
+            </div>
+          )}
+        </div>
+      </section>
+    </div>
+  )
+}
