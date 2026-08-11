@@ -8,7 +8,7 @@ import {
   BookOpen, 
   Star, 
   BarChart, 
-  Envelope, 
+  Mail, 
   LogOut,
   HeartHandshake,
   Package,
@@ -84,7 +84,7 @@ export default function AdminDashboard() {
     { id: 'programs', label: 'Programs', icon: <BookOpen className="w-4 h-4" /> },
     { id: 'stories', label: 'Stories', icon: <Star className="w-4 h-4" /> },
     { id: 'stats', label: 'Impact Stats', icon: <BarChart className="w-4 h-4" /> },
-    { id: 'messages', label: 'Messages', icon: <Envelope className="w-4 h-4" /> },
+    { id: 'messages', label: 'Messages', icon: <Mail className="w-4 h-4" /> },
     { id: 'support', label: 'Support', icon: <HeartHandshake className="w-4 h-4" /> },
   ]
 
