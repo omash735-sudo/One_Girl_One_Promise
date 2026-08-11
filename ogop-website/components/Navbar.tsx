@@ -12,6 +12,7 @@ export default function Navbar() {
   const pathname = usePathname()
   const router = useRouter()
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const mobileDropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,7 +24,11 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      const target = event.target as Node
+      const insideDesktop = dropdownRef.current?.contains(target)
+      const insideMobile = mobileDropdownRef.current?.contains(target)
+      
+      if (!insideDesktop && !insideMobile) {
         setIsJoinUsOpen(false)
       }
     }
@@ -205,7 +210,7 @@ export default function Navbar() {
                     </button>
                   ))}
 
-                  <div className="mt-1">
+                  <div className="mt-1" ref={mobileDropdownRef}>
                     <button
                       onClick={() => setIsJoinUsOpen(!isJoinUsOpen)}
                       className="w-full flex items-center justify-between px-4 py-3 text-base font-semibold text-[#1A1A1A] hover:text-[#003A99] hover:bg-[#F8F9FA] transition-colors"
