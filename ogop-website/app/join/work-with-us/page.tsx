@@ -7,7 +7,10 @@ import {
   Briefcase, 
   Mail, 
   CheckCircle,
-  Loader2
+  Loader2,
+  Shield,
+  Users,
+  Globe
 } from 'lucide-react'
 
 export default function WorkWithUsPage() {
@@ -93,17 +96,17 @@ export default function WorkWithUsPage() {
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="border border-[#E0E2E6] p-6 bg-[#F8F9FA] text-center">
-              <div className="text-4xl mb-2">👶</div>
+              <Shield className="w-12 h-12 text-[#003A99] mx-auto mb-2" />
               <h3 className="font-bold text-[#1A1A1A]">Child-Safe</h3>
               <p className="text-sm text-[#4A4F59]">We prioritize the safety and well-being of every girl</p>
             </div>
             <div className="border border-[#E0E2E6] p-6 bg-[#F8F9FA] text-center">
-              <div className="text-4xl mb-2">👩</div>
+              <Users className="w-12 h-12 text-[#1A7F00] mx-auto mb-2" />
               <h3 className="font-bold text-[#1A1A1A]">Female-Led</h3>
               <p className="text-sm text-[#4A4F59]">Empowering women and girls through leadership</p>
             </div>
             <div className="border border-[#E0E2E6] p-6 bg-[#F8F9FA] text-center">
-              <div className="text-4xl mb-2">🌍</div>
+              <Globe className="w-12 h-12 text-[#003A99] mx-auto mb-2" />
               <h3 className="font-bold text-[#1A1A1A]">Community</h3>
               <p className="text-sm text-[#4A4F59]">Working together to create lasting change</p>
             </div>
