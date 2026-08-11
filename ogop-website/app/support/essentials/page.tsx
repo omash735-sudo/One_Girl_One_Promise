@@ -11,7 +11,7 @@ import {
   Shirt,
   BookOpen,
   Droplets,
-  Hospital
+  Pill
 } from 'lucide-react'
 
 export default function EssentialsPage() {
@@ -121,7 +121,7 @@ export default function EssentialsPage() {
               <p className="font-medium text-[#1A1A1A]">Sanitary Products</p>
             </div>
             <div className="border border-[#E0E2E6] p-4 bg-[#F8F9FA] text-center">
-              <Hospital className="w-8 h-8 text-[#1A7F00] mx-auto mb-2" />
+              <Pill className="w-8 h-8 text-[#1A7F00] mx-auto mb-2" />
               <p className="font-medium text-[#1A1A1A]">Health Items</p>
             </div>
           </div>
