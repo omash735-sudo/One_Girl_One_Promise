@@ -21,6 +21,9 @@ export default function MonthlyPage() {
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
 
+  // Exchange rate: 1 USD = 4500 MK
+  const EXCHANGE_RATE = 4500
+
   const monthlyTiers = [
     { amount: '5', impact: 'Provides learning materials for one student' },
     { amount: '10', impact: 'Covers transportation for two students' },
@@ -93,6 +96,11 @@ export default function MonthlyPage() {
         </div>
       </section>
 
+      {/* Exchange Rate Notice */}
+      <div className="bg-[#FFEB00] text-[#1A1A1A] py-2 px-4 text-center text-sm font-medium">
+        Exchange Rate: 1 USD ≈ 4,500 MK (Malawi Kwacha)
+      </div>
+
       {/* Why Monthly */}
       <section className="py-12 bg-white border-b border-[#E0E2E6]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -150,33 +158,37 @@ export default function MonthlyPage() {
 
               <form onSubmit={handleSubmit}>
                 <div className="space-y-4 mb-8">
-                  {monthlyTiers.map((tier) => (
-                    <div 
-                      key={tier.amount}
-                      className={`border p-4 md:p-6 flex flex-col md:flex-row items-center justify-between cursor-pointer transition-colors ${
-                        selectedAmount === tier.amount 
-                          ? 'border-[#003A99] bg-[#F8F9FA]' 
-                          : 'border-[#E0E2E6] hover:border-[#003A99]'
-                      }`}
-                      onClick={() => setSelectedAmount(tier.amount)}
-                    >
-                      <div className="flex items-center gap-4 w-full md:w-auto">
-                        <input
-                          type="radio"
-                          name="amount"
-                          value={tier.amount}
-                          checked={selectedAmount === tier.amount}
-                          onChange={() => setSelectedAmount(tier.amount)}
-                          className="w-4 h-4 accent-[#003A99]"
-                        />
-                        <div>
-                          <span className="text-2xl font-bold text-[#003A99]">${tier.amount}</span>
-                          <span className="text-sm text-[#4A4F59] ml-2">/ month</span>
+                  {monthlyTiers.map((tier) => {
+                    const mkAmount = Math.round(parseFloat(tier.amount) * EXCHANGE_RATE)
+                    return (
+                      <div 
+                        key={tier.amount}
+                        className={`border p-4 md:p-6 flex flex-col md:flex-row items-center justify-between cursor-pointer transition-colors ${
+                          selectedAmount === tier.amount 
+                            ? 'border-[#003A99] bg-[#F8F9FA]' 
+                            : 'border-[#E0E2E6] hover:border-[#003A99]'
+                        }`}
+                        onClick={() => setSelectedAmount(tier.amount)}
+                      >
+                        <div className="flex items-center gap-4 w-full md:w-auto">
+                          <input
+                            type="radio"
+                            name="amount"
+                            value={tier.amount}
+                            checked={selectedAmount === tier.amount}
+                            onChange={() => setSelectedAmount(tier.amount)}
+                            className="w-4 h-4 accent-[#003A99]"
+                          />
+                          <div>
+                            <span className="text-2xl font-bold text-[#003A99]">${tier.amount}</span>
+                            <span className="text-sm text-[#4A4F59] ml-2">/ month</span>
+                            <div className="text-xs text-[#4A4F59]">MK {mkAmount.toLocaleString()}</div>
+                          </div>
                         </div>
+                        <p className="text-sm text-[#4A4F59] my-2 md:my-0">{tier.impact}</p>
                       </div>
-                      <p className="text-sm text-[#4A4F59] my-2 md:my-0">{tier.impact}</p>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
 
                 <div className="mb-6">
