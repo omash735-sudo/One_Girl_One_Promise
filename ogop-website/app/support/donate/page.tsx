@@ -13,16 +13,67 @@ export default function DonatePage() {
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
+  const [currency, setCurrency] = useState<'USD' | 'MK'>('USD')
 
   const EXCHANGE_RATE = 4500
-  const presetAmounts = ['10', '25', '50', '100']
+
+  const presetAmountsUSD = ['10', '25', '50', '100']
+  const presetAmountsMK = ['45000', '112500', '225000', '450000']
+
+  const getPresetAmounts = () => {
+    return currency === 'USD' ? presetAmountsUSD : presetAmountsMK
+  }
+
+  const getDisplayAmount = (amount: string) => {
+    if (currency === 'USD') {
+      return `$${amount}`
+    } else {
+      return `MK ${parseInt(amount).toLocaleString()}`
+    }
+  }
+
+  const getMKEquivalent = (usdAmount: string) => {
+    return Math.round(parseFloat(usdAmount) * EXCHANGE_RATE)
+  }
+
+  const getUSDAmount = (mkAmount: string) => {
+    return (parseFloat(mkAmount) / EXCHANGE_RATE).toFixed(2)
+  }
+
+  const handleCurrencyToggle = (newCurrency: 'USD' | 'MK') => {
+    setCurrency(newCurrency)
+    // Reset selections when switching currencies
+    setSelectedAmount('')
+    setCustomAmount('')
+  }
+
+  const handlePresetClick = (amount: string) => {
+    setSelectedAmount(amount)
+    setCustomAmount('')
+  }
+
+  const handleCustomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCustomAmount(e.target.value)
+    setSelectedAmount('')
+  }
+
+  const getSubmissionAmount = () => {
+    const amount = customAmount || selectedAmount
+    if (!amount) return 0
+    
+    if (currency === 'USD') {
+      return parseFloat(amount)
+    } else {
+      return parseFloat(getUSDAmount(amount))
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
     setError('')
 
-    const amount = customAmount || selectedAmount
+    const amount = getSubmissionAmount()
 
     try {
       const res = await fetch('/api/support/donate', {
@@ -31,10 +82,12 @@ export default function DonatePage() {
         body: JSON.stringify({
           donorName: isAnonymous ? 'Anonymous' : donorName || 'Anonymous',
           donorEmail: isAnonymous ? 'anonymous@donor.com' : donorEmail || 'anonymous@donor.com',
-          amount: parseFloat(amount),
+          amount: amount,
+          currency: currency,
           frequency: 'one-time',
           paymentMethod: 'PayPal',
-          isAnonymous: isAnonymous
+          isAnonymous: isAnonymous,
+          amountMK: currency === 'MK' ? parseFloat(customAmount || selectedAmount) : null
         })
       })
 
@@ -44,7 +97,7 @@ export default function DonatePage() {
         setSubmitted(true)
         setDonorName('')
         setDonorEmail('')
-        setSelectedAmount('25')
+        setSelectedAmount('')
         setCustomAmount('')
         setIsAnonymous(false)
       } else {
@@ -121,50 +174,86 @@ export default function DonatePage() {
                   Choose Your <span className="text-[#003A99]">Donation</span>
                 </h2>
 
+                {/* Currency Selector */}
+                <div className="mb-6">
+                  <label className="block font-semibold text-[#1A1A1A] mb-3">
+                    Currency
+                  </label>
+                  <div className="flex gap-3">
+                    <button
+                      type="button"
+                      onClick={() => handleCurrencyToggle('USD')}
+                      className={`px-6 py-2 font-bold transition-colors ${
+                        currency === 'USD'
+                          ? 'bg-[#003A99] text-white'
+                          : 'border border-[#E0E2E6] text-[#1A1A1A] hover:border-[#003A99]'
+                      }`}
+                    >
+                      USD
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleCurrencyToggle('MK')}
+                      className={`px-6 py-2 font-bold transition-colors ${
+                        currency === 'MK'
+                          ? 'bg-[#003A99] text-white'
+                          : 'border border-[#E0E2E6] text-[#1A1A1A] hover:border-[#003A99]'
+                      }`}
+                    >
+                      MK
+                    </button>
+                  </div>
+                </div>
+
                 {/* Amount Selection */}
                 <div className="mb-6">
                   <label className="block font-semibold text-[#1A1A1A] mb-3">
-                    Donation Amount
+                    Donation Amount ({currency})
                   </label>
                   <div className="grid grid-cols-4 gap-3 mb-3">
-                    {presetAmounts.map((amount) => {
-                      const mkAmount = Math.round(parseFloat(amount) * EXCHANGE_RATE)
-                      return (
-                        <button
-                          key={amount}
-                          type="button"
-                          onClick={() => {
-                            setSelectedAmount(amount)
-                            setCustomAmount('')
-                          }}
-                          className={`py-3 font-bold transition-colors ${
-                            selectedAmount === amount && !customAmount
-                              ? 'bg-[#003A99] text-white'
-                              : 'border border-[#E0E2E6] text-[#1A1A1A] hover:border-[#003A99]'
-                          }`}
-                        >
-                          <div>${amount}</div>
-                          <div className="text-xs font-normal opacity-70">MK {mkAmount.toLocaleString()}</div>
-                        </button>
-                      )
-                    })}
+                    {getPresetAmounts().map((amount) => (
+                      <button
+                        key={amount}
+                        type="button"
+                        onClick={() => handlePresetClick(amount)}
+                        className={`py-3 font-bold transition-colors ${
+                          selectedAmount === amount && !customAmount
+                            ? 'bg-[#003A99] text-white'
+                            : 'border border-[#E0E2E6] text-[#1A1A1A] hover:border-[#003A99]'
+                        }`}
+                      >
+                        {getDisplayAmount(amount)}
+                        {currency === 'USD' && (
+                          <div className="text-xs font-normal opacity-70">
+                            MK {getMKEquivalent(amount).toLocaleString()}
+                          </div>
+                        )}
+                        {currency === 'MK' && (
+                          <div className="text-xs font-normal opacity-70">
+                            ≈ ${getUSDAmount(amount)}
+                          </div>
+                        )}
+                      </button>
+                    ))}
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-[#4A4F59] text-sm">Custom:</span>
                     <input
                       type="number"
                       value={customAmount}
-                      onChange={(e) => {
-                        setCustomAmount(e.target.value)
-                        setSelectedAmount('')
-                      }}
-                      placeholder="Enter amount"
+                      onChange={handleCustomChange}
+                      placeholder={`Enter amount (${currency})`}
                       className="flex-1 px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
                       min="1"
                     />
-                    {customAmount && (
+                    {customAmount && currency === 'USD' && (
                       <span className="text-sm text-[#4A4F59] whitespace-nowrap">
                         ≈ MK {Math.round(parseFloat(customAmount) * EXCHANGE_RATE).toLocaleString()}
+                      </span>
+                    )}
+                    {customAmount && currency === 'MK' && (
+                      <span className="text-sm text-[#4A4F59] whitespace-nowrap">
+                        ≈ ${getUSDAmount(customAmount)}
                       </span>
                     )}
                   </div>
@@ -209,28 +298,31 @@ export default function DonatePage() {
                 {/* Payment Methods */}
                 <div className="mb-6">
                   <h3 className="font-semibold text-[#1A1A1A] mb-3">Payment Method</h3>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-3 gap-3">
                     <button
                       type="button"
                       className="border border-[#003A99] bg-[#003A99]/5 p-3 text-center font-medium text-[#003A99]"
                     >
                       PayPal
+                      <div className="text-xs font-normal text-[#4A4F59]">USD only</div>
                     </button>
                     <button
                       type="button"
                       className="border border-[#E0E2E6] p-3 text-center font-medium text-[#4A4F59] hover:border-[#003A99] transition-colors"
                     >
                       Bank Transfer
+                      <div className="text-xs font-normal text-[#4A4F59]">MK only</div>
                     </button>
                     <button
                       type="button"
-                      className="border border-[#E0E2E6] p-3 text-center font-medium text-[#4A4F59] hover:border-[#003A99] transition-colors col-span-2"
+                      className="border border-[#E0E2E6] p-3 text-center font-medium text-[#4A4F59] hover:border-[#003A99] transition-colors"
                     >
                       Mobile Money
+                      <div className="text-xs font-normal text-[#4A4F59]">MK only</div>
                     </button>
                   </div>
                   <p className="text-xs text-[#4A4F59] mt-2">
-                    PayPal is the primary payment method. Other options available upon request.
+                    PayPal accepts USD. Bank Transfer and Mobile Money accept Malawi Kwacha (MK).
                   </p>
                 </div>
 
@@ -251,12 +343,14 @@ export default function DonatePage() {
                       Processing...
                     </>
                   ) : (
-                    'Donate Now'
+                    `Donate ${currency === 'USD' ? '$' : 'MK'}${customAmount || selectedAmount || '...'}`
                   )}
                 </button>
 
                 <p className="text-xs text-[#4A4F59] text-center mt-4">
-                  Your donation is secure and will be processed through PayPal.
+                  {currency === 'USD' 
+                    ? 'Your donation is secure and will be processed through PayPal.' 
+                    : 'You will be redirected to complete your bank transfer or mobile money payment.'}
                 </p>
               </form>
             )}
