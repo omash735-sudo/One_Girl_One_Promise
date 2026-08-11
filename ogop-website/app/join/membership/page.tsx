@@ -9,7 +9,10 @@ import {
   Building, 
   GraduationCap,
   CheckCircle,
-  Loader2
+  Loader2,
+  Home,
+  BarChart,
+  Award
 } from 'lucide-react'
 
 export default function MembershipPage() {
@@ -127,17 +130,17 @@ export default function MembershipPage() {
           </h2>
           <div className="grid md:grid-cols-3 gap-6 mt-8">
             <div className="border border-[#E0E2E6] p-6 bg-[#F8F9FA]">
-              <div className="text-4xl mb-2">🏠</div>
+              <Home className="w-12 h-12 text-[#003A99] mx-auto mb-2" />
               <h3 className="font-bold text-[#1A1A1A]">Visit OGOP House</h3>
               <p className="text-sm text-[#4A4F59]">Once every semester</p>
             </div>
             <div className="border border-[#E0E2E6] p-6 bg-[#F8F9FA]">
-              <div className="text-4xl mb-2">📊</div>
+              <BarChart className="w-12 h-12 text-[#1A7F00] mx-auto mb-2" />
               <h3 className="font-bold text-[#1A1A1A]">Track Progress</h3>
               <p className="text-sm text-[#4A4F59]">Access academic performance</p>
             </div>
             <div className="border border-[#E0E2E6] p-6 bg-[#F8F9FA]">
-              <div className="text-4xl mb-2">🌟</div>
+              <Award className="w-12 h-12 text-[#003A99] mx-auto mb-2" />
               <h3 className="font-bold text-[#1A1A1A]">Be Recognized</h3>
               <p className="text-sm text-[#4A4F59]">In all OGOP communications</p>
             </div>
