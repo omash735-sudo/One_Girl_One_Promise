@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { HeartHandshake, Menu, X } from 'lucide-react'
 
 export default function Navbar() {
@@ -10,6 +10,7 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isJoinUsOpen, setIsJoinUsOpen] = useState(false)
   const pathname = usePathname()
+  const router = useRouter()
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -54,6 +55,18 @@ export default function Navbar() {
     { href: '/join/volunteer', label: 'Volunteer' },
     { href: '/join/work-with-us', label: 'Work With Us' },
   ]
+
+  const handleMobileNavClick = (href: string) => {
+    setIsMobileMenuOpen(false)
+    setIsJoinUsOpen(false)
+    router.push(href)
+  }
+
+  const handleMobileJoinClick = (href: string) => {
+    setIsMobileMenuOpen(false)
+    setIsJoinUsOpen(false)
+    router.push(href)
+  }
 
   return (
     <>
@@ -179,18 +192,17 @@ export default function Navbar() {
               <div className="px-4 py-6">
                 <div className="flex flex-col space-y-1">
                   {navLinks.map((link) => (
-                    <Link
+                    <button
                       key={link.href}
-                      href={link.href}
-                      className={`px-4 py-3 text-base font-semibold transition-colors ${
+                      onClick={() => handleMobileNavClick(link.href)}
+                      className={`w-full text-left px-4 py-3 text-base font-semibold transition-colors ${
                         pathname === link.href
                           ? 'text-[#003A99] bg-[#F8F9FA] border-l-4 border-[#003A99]'
                           : 'text-[#1A1A1A] hover:text-[#003A99] hover:bg-[#F8F9FA]'
                       }`}
-                      onClick={() => setIsMobileMenuOpen(false)}
                     >
                       {link.label}
-                    </Link>
+                    </button>
                   ))}
 
                   <div className="mt-1">
@@ -214,33 +226,25 @@ export default function Navbar() {
                     {isJoinUsOpen && (
                       <div className="ml-4 mt-1 border-l-2 border-[#E0E2E6]">
                         {joinUsOptions.map((option) => (
-                          <Link
+                          <button
                             key={option.href}
-                            href={option.href}
-                            className="block px-4 py-2.5 text-sm font-medium text-[#1A1A1A] hover:text-[#1A7F00] hover:bg-[#F8F9FA] transition-colors"
-                            onClick={() => {
-                              // Close the mobile menu after navigation
-                              setTimeout(() => {
-                                setIsMobileMenuOpen(false)
-                                setIsJoinUsOpen(false)
-                              }, 150)
-                            }}
+                            onClick={() => handleMobileJoinClick(option.href)}
+                            className="w-full text-left px-4 py-2.5 text-sm font-medium text-[#1A1A1A] hover:text-[#1A7F00] hover:bg-[#F8F9FA] transition-colors"
                           >
                             {option.label}
-                          </Link>
+                          </button>
                         ))}
                       </div>
                     )}
                   </div>
 
-                  <Link
-                    href="/support"
-                    className="mt-4 flex items-center justify-center gap-2 px-6 py-3 border-2 border-[#1A7F00] text-[#1A7F00] font-bold text-base transition-all hover:bg-[#1A7F00] hover:text-white"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                  <button
+                    onClick={() => handleMobileNavClick('/support')}
+                    className="mt-4 w-full flex items-center justify-center gap-2 px-6 py-3 border-2 border-[#1A7F00] text-[#1A7F00] font-bold text-base transition-all hover:bg-[#1A7F00] hover:text-white"
                   >
                     <HeartHandshake className="w-5 h-5" />
                     <span>Support Us</span>
-                  </Link>
+                  </button>
                 </div>
               </div>
             </div>
