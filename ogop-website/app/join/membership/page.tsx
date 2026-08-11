@@ -65,7 +65,6 @@ export default function MembershipPage() {
     setError('')
 
     try {
-      // API endpoint for membership submissions
       const res = await fetch('/api/join/membership', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -99,7 +98,6 @@ export default function MembershipPage() {
 
   return (
     <div className="min-h-screen bg-[#F8F9FA]">
-      {/* Back to Home */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 md:pt-8">
         <Link 
           href="/" 
@@ -110,7 +108,6 @@ export default function MembershipPage() {
         </Link>
       </div>
 
-      {/* Hero Section */}
       <section className="bg-[#003A99] text-white py-12 md:py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-3xl md:text-5xl font-bold mb-4">
@@ -123,7 +120,6 @@ export default function MembershipPage() {
         </div>
       </section>
 
-      {/* Benefits */}
       <section className="py-12 bg-white border-b border-[#E0E2E6]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-2xl font-bold text-[#1A1A1A] mb-4">
@@ -155,7 +151,6 @@ export default function MembershipPage() {
         </div>
       </section>
 
-      {/* Membership Tiers */}
       <section className="py-16 md:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl md:text-3xl font-bold text-[#1A1A1A] text-center mb-4">
@@ -196,31 +191,6 @@ export default function MembershipPage() {
             ))}
           </div>
 
-          {/* How to Join */}
-          <div className="max-w-3xl mx-auto">
-            <h3 className="text-xl font-bold text-[#1A1A1A] text-center mb-6">
-              How to <span className="text-[#003A99]">Join</span>
-            </h3>
-            <div className="grid md:grid-cols-3 gap-4 mb-8">
-              <div className="border border-[#E0E2E6] p-4 bg-white text-center">
-                <div className="text-2xl font-bold text-[#003A99]">1</div>
-                <h4 className="font-bold text-[#1A1A1A]">Apply</h4>
-                <p className="text-sm text-[#4A4F59]">Fill in the form below. Takes 3 minutes.</p>
-              </div>
-              <div className="border border-[#E0E2E6] p-4 bg-white text-center">
-                <div className="text-2xl font-bold text-[#003A99]">2</div>
-                <h4 className="font-bold text-[#1A1A1A]">Pay Fee</h4>
-                <p className="text-sm text-[#4A4F59]">Via Mobile Money or Bank</p>
-              </div>
-              <div className="border border-[#E0E2E6] p-4 bg-white text-center">
-                <div className="text-2xl font-bold text-[#003A99]">3</div>
-                <h4 className="font-bold text-[#1A1A1A]">Welcome</h4>
-                <p className="text-sm text-[#4A4F59]">Orientation & get involved</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Form */}
           <div id="membership-form" className="max-w-3xl mx-auto">
             {submitted ? (
               <div className="border border-[#E0E2E6] p-6 md:p-8 bg-white text-center">
@@ -328,7 +298,6 @@ export default function MembershipPage() {
         </div>
       </section>
 
-      {/* Payment Options */}
       <section className="py-12 bg-[#003A99] text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h3 className="text-2xl font-bold mb-4">Membership Fee Payment</h3>
