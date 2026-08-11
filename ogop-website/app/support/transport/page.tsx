@@ -1,7 +1,61 @@
+'use client'
+
+import { useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Bus, CheckCircle } from 'lucide-react'
+import { ArrowLeft, Bus, CheckCircle, Loader2 } from 'lucide-react'
 
 export default function TransportPage() {
+  const [selectedAmount, setSelectedAmount] = useState<string>('45')
+  const [donorName, setDonorName] = useState('')
+  const [donorEmail, setDonorEmail] = useState('')
+  const [isAnonymous, setIsAnonymous] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState('')
+
+  const transportOptions = [
+    { amount: '15', label: 'Monthly Transport' },
+    { amount: '45', label: 'Term Transport' },
+    { amount: '150', label: 'Year Transport' }
+  ]
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSubmitting(true)
+    setError('')
+
+    try {
+      const res = await fetch('/api/support/donate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          donorName: isAnonymous ? 'Anonymous' : donorName || 'Anonymous',
+          donorEmail: isAnonymous ? 'anonymous@donor.com' : donorEmail || 'anonymous@donor.com',
+          amount: parseFloat(selectedAmount),
+          frequency: 'one-time',
+          paymentMethod: 'PayPal',
+          isAnonymous: isAnonymous
+        })
+      })
+
+      const data = await res.json()
+
+      if (res.ok) {
+        setSubmitted(true)
+        setDonorName('')
+        setDonorEmail('')
+        setSelectedAmount('45')
+        setIsAnonymous(false)
+      } else {
+        setError(data.error || 'Something went wrong. Please try again.')
+      }
+    } catch (err) {
+      setError('Network error. Please try again.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-[#F8F9FA]">
       {/* Back to Support */}
@@ -63,34 +117,115 @@ export default function TransportPage() {
 
       {/* Call to Action */}
       <section className="py-16 md:py-20">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="border border-[#E0E2E6] p-6 md:p-8 bg-white">
-            <h2 className="text-2xl font-bold text-[#1A1A1A] mb-4">
-              Make a <span className="text-[#003A99]">Donation</span>
-            </h2>
-            <p className="text-[#4A4F59] mb-6">
-              Your contribution helps cover transportation costs for girls returning to school.
-            </p>
-            <div className="space-y-3 max-w-xs mx-auto">
-              <div className="flex justify-between items-center border border-[#E0E2E6] p-3 bg-[#F8F9FA]">
-                <span className="font-medium text-[#1A1A1A]">Monthly Transport</span>
-                <span className="font-bold text-[#003A99]">$15</span>
+            {submitted ? (
+              <div className="text-center py-8">
+                <div className="bg-[#1A7F00] text-white p-6 mb-6">
+                  <CheckCircle className="w-12 h-12 mx-auto mb-3" />
+                  <h3 className="text-2xl font-bold">Thank You!</h3>
+                  <p className="text-white/80 mt-2">Your support helps girls travel safely to school.</p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Link href="/" className="inline-block bg-[#003A99] text-white px-6 py-3 font-bold hover:bg-[#002A70] transition-colors">
+                    Return Home
+                  </Link>
+                  <Link href="/support" className="inline-block border-2 border-[#003A99] text-[#003A99] px-6 py-3 font-bold hover:bg-[#003A99] hover:text-white transition-colors">
+                    Support More
+                  </Link>
+                </div>
               </div>
-              <div className="flex justify-between items-center border border-[#E0E2E6] p-3 bg-[#F8F9FA]">
-                <span className="font-medium text-[#1A1A1A]">Term Transport</span>
-                <span className="font-bold text-[#003A99]">$45</span>
-              </div>
-              <div className="flex justify-between items-center border border-[#E0E2E6] p-3 bg-[#F8F9FA]">
-                <span className="font-medium text-[#1A1A1A]">Year Transport</span>
-                <span className="font-bold text-[#003A99]">$150</span>
-              </div>
-            </div>
-            <Link
-              href="/support/donate"
-              className="inline-block mt-6 bg-[#1A7F00] text-white px-8 py-3 font-bold hover:bg-[#136000] transition-colors"
-            >
-              Support Transport
-            </Link>
+            ) : (
+              <form onSubmit={handleSubmit}>
+                <h2 className="text-2xl font-bold text-[#1A1A1A] text-center mb-4">
+                  Make a <span className="text-[#003A99]">Donation</span>
+                </h2>
+                <p className="text-[#4A4F59] text-center mb-6">
+                  Your contribution helps cover transportation costs for girls returning to school.
+                </p>
+
+                <div className="space-y-3 max-w-xs mx-auto mb-6">
+                  {transportOptions.map((option) => (
+                    <div 
+                      key={option.amount}
+                      className={`flex justify-between items-center border p-3 cursor-pointer transition-colors ${
+                        selectedAmount === option.amount 
+                          ? 'border-[#003A99] bg-[#F8F9FA]' 
+                          : 'border-[#E0E2E6] hover:border-[#003A99]'
+                      }`}
+                      onClick={() => setSelectedAmount(option.amount)}
+                    >
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="radio"
+                          name="transportAmount"
+                          value={option.amount}
+                          checked={selectedAmount === option.amount}
+                          onChange={() => setSelectedAmount(option.amount)}
+                          className="w-4 h-4 accent-[#003A99]"
+                        />
+                        <span className="font-medium text-[#1A1A1A]">{option.label}</span>
+                      </div>
+                      <span className="font-bold text-[#003A99]">${option.amount}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mb-4">
+                  <input
+                    type="text"
+                    placeholder="Your Name"
+                    value={donorName}
+                    onChange={(e) => setDonorName(e.target.value)}
+                    required={!isAnonymous}
+                    className="w-full px-4 py-3 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                  />
+                </div>
+                <div className="mb-4">
+                  <input
+                    type="email"
+                    placeholder="Your Email"
+                    value={donorEmail}
+                    onChange={(e) => setDonorEmail(e.target.value)}
+                    required={!isAnonymous}
+                    className="w-full px-4 py-3 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                  />
+                </div>
+
+                <div className="mb-6">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={isAnonymous}
+                      onChange={(e) => setIsAnonymous(e.target.checked)}
+                      className="w-4 h-4 accent-[#003A99]"
+                    />
+                    <span className="text-sm text-[#4A4F59]">Donate anonymously</span>
+                  </label>
+                </div>
+
+                {error && (
+                  <div className="bg-[#E31E24] text-white px-4 py-3 mb-4 text-center text-sm">
+                    {error}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="w-full bg-[#1A7F00] text-white py-3 font-bold hover:bg-[#136000] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {submitting ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    'Support Transport'
+                  )}
+                </button>
+              </form>
+            )}
           </div>
         </div>
       </section>
