@@ -50,7 +50,7 @@ export default function AdminLogin() {
           <p className="text-[#4A4F59] text-sm mt-1">One Girl One Promise</p>
         </div>
         
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleLogin}>
           <div className="mb-4">
             <div className="flex items-center border border-[#E0E2E6] focus-within:border-[#003A99] transition-colors">
               <Mail className="w-5 h-5 text-[#4A4F59] ml-3 flex-shrink-0" />
