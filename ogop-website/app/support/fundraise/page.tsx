@@ -68,4 +68,156 @@ export default function FundraisePage() {
       {/* How It Works */}
       <section className="py-12 bg-white border-b border-[#E0E2E6]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <
+          <h2 className="text-2xl font-bold text-[#1A1A1A] text-center mb-8">
+            How <span className="text-[#003A99]">Fundraising</span> Works
+          </h2>
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="border border-[#E0E2E6] p-6 bg-[#F8F9FA] text-center">
+              <Target className="w-8 h-8 text-[#003A99] mx-auto mb-3" />
+              <h3 className="font-bold text-[#1A1A1A]">1. Plan</h3>
+              <p className="text-sm text-[#4A4F59]">Decide on your fundraiser type, goal, and timeline</p>
+            </div>
+            <div className="border border-[#E0E2E6] p-6 bg-[#F8F9FA] text-center">
+              <Users className="w-8 h-8 text-[#1A7F00] mx-auto mb-3" />
+              <h3 className="font-bold text-[#1A1A1A]">2. Launch</h3>
+              <p className="text-sm text-[#4A4F59]">Share your campaign with your community and networks</p>
+            </div>
+            <div className="border border-[#E0E2E6] p-6 bg-[#F8F9FA] text-center">
+              <CheckCircle className="w-8 h-8 text-[#003A99] mx-auto mb-3" />
+              <h3 className="font-bold text-[#1A1A1A]">3. Impact</h3>
+              <p className="text-sm text-[#4A4F59]">OGOP receives funds and transforms lives</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Fundraiser Form */}
+      <section className="py-16 md:py-20">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="border border-[#E0E2E6] p-6 md:p-8 bg-white">
+            {submitted ? (
+              <div className="text-center py-8">
+                <div className="bg-[#1A7F00] text-white p-4 mb-6">
+                  <CheckCircle className="w-12 h-12 mx-auto mb-3" />
+                  <h3 className="text-2xl font-bold">Thank You!</h3>
+                  <p className="text-white/80">Your fundraiser idea has been submitted. OGOP will contact you shortly.</p>
+                </div>
+                <Link 
+                  href="/" 
+                  className="inline-block bg-[#003A99] text-white px-6 py-3 font-bold hover:bg-[#002A70] transition-colors"
+                >
+                  Return Home
+                </Link>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit}>
+                <h2 className="text-2xl font-bold text-[#1A1A1A] mb-6">
+                  Start Your <span className="text-[#003A99]">Fundraiser</span>
+                </h2>
+
+                <div className="space-y-4">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <input
+                      type="text"
+                      name="name"
+                      placeholder="Full Name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                      className="px-4 py-3 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                    />
+                    <input
+                      type="email"
+                      name="email"
+                      placeholder="Email Address"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      className="px-4 py-3 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                    />
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <input
+                      type="tel"
+                      name="phone"
+                      placeholder="Phone Number"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      className="px-4 py-3 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                    />
+                    <select
+                      name="fundraiserType"
+                      value={formData.fundraiserType}
+                      onChange={handleChange}
+                      required
+                      className="px-4 py-3 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99] bg-white"
+                    >
+                      <option value="">Type of Fundraiser</option>
+                      {fundraiserTypes.map((type) => (
+                        <option key={type} value={type}>{type}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <input
+                      type="text"
+                      name="goal"
+                      placeholder="Fundraising Goal (USD)"
+                      value={formData.goal}
+                      onChange={handleChange}
+                      className="px-4 py-3 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                    />
+                    <input
+                      type="date"
+                      name="date"
+                      value={formData.date}
+                      onChange={handleChange}
+                      className="px-4 py-3 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                    />
+                  </div>
+
+                  <input
+                    type="text"
+                    name="location"
+                    placeholder="Location / Platform"
+                    value={formData.location}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                  />
+
+                  <textarea
+                    name="description"
+                    rows={4}
+                    placeholder="Describe your fundraiser idea..."
+                    value={formData.description}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99] resize-vertical"
+                  />
+
+                  <textarea
+                    name="notes"
+                    rows={3}
+                    placeholder="Additional information..."
+                    value={formData.notes}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99] resize-vertical"
+                  />
+
+                  <button
+                    type="submit"
+                    className="w-full bg-[#1A7F00] text-white py-3 font-bold hover:bg-[#136000] transition-colors"
+                  >
+                    Start Fundraising
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      </section>
+    </div>
+  )
+}
