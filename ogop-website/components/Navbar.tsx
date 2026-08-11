@@ -47,12 +47,12 @@ export default function Navbar() {
   ]
 
   const joinUsOptions = [
-    { href: '/donate/now', label: 'Donate Now' },
-    { href: '/donate/monthly', label: 'Donate Monthly' },
-    { href: '/become-member', label: 'Become a Member' },
-    { href: '/partner', label: 'Partner With Us' },
-    { href: '/volunteer', label: 'Volunteer' },
-    { href: '/careers', label: 'Work With Us' },
+    { href: '/support/donate', label: 'Donate Now' },
+    { href: '/support/monthly', label: 'Donate Monthly' },
+    { href: '/join/membership', label: 'Become a Member' },
+    { href: '/join/partner', label: 'Partner With Us' },
+    { href: '/join/volunteer', label: 'Volunteer' },
+    { href: '/join/work-with-us', label: 'Work With Us' },
   ]
 
   return (
