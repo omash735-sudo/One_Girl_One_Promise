@@ -14,6 +14,7 @@ export default function DonatePage() {
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
 
+  const EXCHANGE_RATE = 4500
   const presetAmounts = ['10', '25', '50', '100']
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -82,6 +83,11 @@ export default function DonatePage() {
         </div>
       </section>
 
+      {/* Exchange Rate Notice */}
+      <div className="bg-[#FFEB00] text-[#1A1A1A] py-2 px-4 text-center text-sm font-medium">
+        Exchange Rate: 1 USD ≈ 4,500 MK (Malawi Kwacha)
+      </div>
+
       {/* Donation Form */}
       <section className="py-16 md:py-20">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -118,26 +124,30 @@ export default function DonatePage() {
                 {/* Amount Selection */}
                 <div className="mb-6">
                   <label className="block font-semibold text-[#1A1A1A] mb-3">
-                    Donation Amount (USD)
+                    Donation Amount
                   </label>
                   <div className="grid grid-cols-4 gap-3 mb-3">
-                    {presetAmounts.map((amount) => (
-                      <button
-                        key={amount}
-                        type="button"
-                        onClick={() => {
-                          setSelectedAmount(amount)
-                          setCustomAmount('')
-                        }}
-                        className={`py-3 font-bold transition-colors ${
-                          selectedAmount === amount && !customAmount
-                            ? 'bg-[#003A99] text-white'
-                            : 'border border-[#E0E2E6] text-[#1A1A1A] hover:border-[#003A99]'
-                        }`}
-                      >
-                        ${amount}
-                      </button>
-                    ))}
+                    {presetAmounts.map((amount) => {
+                      const mkAmount = Math.round(parseFloat(amount) * EXCHANGE_RATE)
+                      return (
+                        <button
+                          key={amount}
+                          type="button"
+                          onClick={() => {
+                            setSelectedAmount(amount)
+                            setCustomAmount('')
+                          }}
+                          className={`py-3 font-bold transition-colors ${
+                            selectedAmount === amount && !customAmount
+                              ? 'bg-[#003A99] text-white'
+                              : 'border border-[#E0E2E6] text-[#1A1A1A] hover:border-[#003A99]'
+                          }`}
+                        >
+                          <div>${amount}</div>
+                          <div className="text-xs font-normal opacity-70">MK {mkAmount.toLocaleString()}</div>
+                        </button>
+                      )
+                    })}
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-[#4A4F59] text-sm">Custom:</span>
@@ -152,6 +162,11 @@ export default function DonatePage() {
                       className="flex-1 px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
                       min="1"
                     />
+                    {customAmount && (
+                      <span className="text-sm text-[#4A4F59] whitespace-nowrap">
+                        ≈ MK {Math.round(parseFloat(customAmount) * EXCHANGE_RATE).toLocaleString()}
+                      </span>
+                    )}
                   </div>
                 </div>
 
