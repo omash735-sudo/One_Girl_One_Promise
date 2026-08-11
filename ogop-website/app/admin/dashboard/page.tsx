@@ -19,7 +19,14 @@ import {
   Users,
   CheckCircle,
   XCircle,
-  Clock
+  Clock,
+  UserPlus,
+  Briefcase,
+  Handshake,
+  CalendarHeart,
+  Plus,
+  Trash2,
+  Pencil
 } from 'lucide-react'
 
 interface Tab {
@@ -64,6 +71,29 @@ export default function AdminDashboard() {
   const [fundraisers, setFundraisers] = useState([])
   const [sponsorships, setSponsorships] = useState([])
   
+  // Girls states
+  const [girls, setGirls] = useState([])
+  const [showAddGirl, setShowAddGirl] = useState(false)
+  const [newGirl, setNewGirl] = useState({
+    name: '',
+    age: '',
+    location: '',
+    school: '',
+    grade: '',
+    dream: '',
+    story: '',
+    imageUrl: '',
+    needs: [{ itemName: '', description: '', amountMk: '', amountUsd: '' }]
+  })
+
+  // Join requests states
+  const [joinRequests, setJoinRequests] = useState({
+    memberships: [],
+    volunteers: [],
+    partners: [],
+    work: []
+  })
+
   const [newProgram, setNewProgram] = useState({
     icon: 'fa-book-open',
     title: '',
@@ -86,6 +116,8 @@ export default function AdminDashboard() {
     { id: 'stats', label: 'Impact Stats', icon: <BarChart className="w-4 h-4" /> },
     { id: 'messages', label: 'Messages', icon: <Mail className="w-4 h-4" /> },
     { id: 'support', label: 'Support', icon: <HeartHandshake className="w-4 h-4" /> },
+    { id: 'girls', label: 'Girls', icon: <Users className="w-4 h-4" /> },
+    { id: 'join', label: 'Join Requests', icon: <UserPlus className="w-4 h-4" /> },
   ]
 
   useEffect(() => {
@@ -101,40 +133,33 @@ export default function AdminDashboard() {
     try {
       const token = localStorage.getItem('ogop_admin_token')
       
-      // Load hero
       const heroRes = await fetch('/api/content?type=hero')
       const heroData = await heroRes.json()
       setHeroContent(heroData)
       
-      // Load about
       const aboutRes = await fetch('/api/content?type=about')
       const aboutData = await aboutRes.json()
       setAboutContent(aboutData.about || {})
       setCoreValues(aboutData.values || [])
       
-      // Load programs
       const programsRes = await fetch('/api/programs')
       const programsData = await programsRes.json()
       setPrograms(programsData)
       
-      // Load stats
       const statsRes = await fetch('/api/content?type=stats')
       const statsData = await statsRes.json()
       setStats(statsData)
       
-      // Load stories
       const storiesRes = await fetch('/api/stories')
       const storiesData = await storiesRes.json()
       setStories(storiesData)
       
-      // Load messages
       const messagesRes = await fetch('/api/contact', {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       const messagesData = await messagesRes.json()
       setMessages(messagesData)
       
-      // Load support data
       const supportRes = await fetch('/api/admin/support?type=all', {
         headers: { 'Authorization': `Bearer ${token}` }
       })
@@ -144,6 +169,25 @@ export default function AdminDashboard() {
         setSupplies(supportData.supplies || [])
         setFundraisers(supportData.fundraisers || [])
         setSponsorships(supportData.sponsorships || [])
+      }
+
+      const girlsRes = await fetch('/api/girls', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      const girlsData = await girlsRes.json()
+      setGirls(girlsData)
+
+      const joinRes = await fetch('/api/admin/join?type=all', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      const joinData = await joinRes.json()
+      if (joinData.success) {
+        setJoinRequests({
+          memberships: joinData.memberships || [],
+          volunteers: joinData.volunteers || [],
+          partners: joinData.partners || [],
+          work: joinData.work || []
+        })
       }
       
       setLoading(false)
@@ -168,6 +212,86 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error('Update error:', error)
     }
+  }
+
+  const updateJoinStatus = async (id: string, type: string, status: string) => {
+    try {
+      const token = localStorage.getItem('ogop_admin_token')
+      await fetch('/api/admin/join', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ id, type, status })
+      })
+      loadAllData()
+    } catch (error) {
+      console.error('Update join error:', error)
+    }
+  }
+
+  const saveGirl = async () => {
+    const token = localStorage.getItem('ogop_admin_token')
+    const res = await fetch('/api/girls', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        ...newGirl,
+        age: parseInt(newGirl.age),
+        isFeatured: false,
+        needs: newGirl.needs.filter(n => n.itemName)
+      })
+    })
+    
+    if (res.ok) {
+      alert('Girl added!')
+      setNewGirl({
+        name: '',
+        age: '',
+        location: '',
+        school: '',
+        grade: '',
+        dream: '',
+        story: '',
+        imageUrl: '',
+        needs: [{ itemName: '', description: '', amountMk: '', amountUsd: '' }]
+      })
+      setShowAddGirl(false)
+      loadAllData()
+    }
+  }
+
+  const deleteGirl = async (id: number) => {
+    if (!confirm('Remove this girl?')) return
+    const token = localStorage.getItem('ogop_admin_token')
+    await fetch(`/api/girls?id=${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    loadAllData()
+  }
+
+  const addNeedField = () => {
+    setNewGirl({
+      ...newGirl,
+      needs: [...newGirl.needs, { itemName: '', description: '', amountMk: '', amountUsd: '' }]
+    })
+  }
+
+  const removeNeedField = (index: number) => {
+    const needs = [...newGirl.needs]
+    needs.splice(index, 1)
+    setNewGirl({ ...newGirl, needs })
+  }
+
+  const updateNeed = (index: number, field: string, value: string) => {
+    const needs = [...newGirl.needs]
+    needs[index] = { ...needs[index], [field]: value }
+    setNewGirl({ ...newGirl, needs })
   }
 
   const saveHero = async () => {
@@ -312,6 +436,11 @@ export default function AdminDashboard() {
               {tab.id === 'support' && (donations.length + supplies.length + fundraisers.length + sponsorships.length) > 0 && (
                 <span className="ml-auto bg-[#FFEB00] text-[#1A1A1A] text-xs px-2 py-0.5">
                   {donations.length + supplies.length + fundraisers.length + sponsorships.length}
+                </span>
+              )}
+              {tab.id === 'join' && (
+                <span className="ml-auto bg-[#FFEB00] text-[#1A1A1A] text-xs px-2 py-0.5">
+                  {joinRequests.memberships.length + joinRequests.volunteers.length + joinRequests.partners.length + joinRequests.work.length}
                 </span>
               )}
             </button>
@@ -619,7 +748,6 @@ export default function AdminDashboard() {
           <div className="bg-white border border-[#E0E2E6] p-6">
             <h2 className="text-2xl font-bold text-[#1A1A1A] mb-6">Support Submissions</h2>
             
-            {/* Donations */}
             {donations.length > 0 && (
               <div className="mb-8">
                 <h3 className="font-bold text-[#003A99] mb-4 flex items-center gap-2">
@@ -655,7 +783,6 @@ export default function AdminDashboard() {
               </div>
             )}
 
-            {/* Supplies */}
             {supplies.length > 0 && (
               <div className="mb-8">
                 <h3 className="font-bold text-[#003A99] mb-4 flex items-center gap-2">
@@ -692,7 +819,6 @@ export default function AdminDashboard() {
               </div>
             )}
 
-            {/* Fundraisers */}
             {fundraisers.length > 0 && (
               <div className="mb-8">
                 <h3 className="font-bold text-[#003A99] mb-4 flex items-center gap-2">
@@ -729,7 +855,6 @@ export default function AdminDashboard() {
               </div>
             )}
 
-            {/* Sponsorships */}
             {sponsorships.length > 0 && (
               <div className="mb-8">
                 <h3 className="font-bold text-[#003A99] mb-4 flex items-center gap-2">
@@ -765,6 +890,333 @@ export default function AdminDashboard() {
 
             {donations.length === 0 && supplies.length === 0 && fundraisers.length === 0 && sponsorships.length === 0 && (
               <p className="text-[#4A4F59]">No support submissions yet</p>
+            )}
+          </div>
+        )}
+
+        {/* Girls Tab */}
+        {activeTab === 'girls' && (
+          <div className="bg-white border border-[#E0E2E6] p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-[#1A1A1A]">Girls</h2>
+              <button 
+                onClick={() => setShowAddGirl(!showAddGirl)}
+                className="bg-[#003A99] text-white px-4 py-2 font-bold hover:bg-[#002A70] transition-colors flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                Add Girl
+              </button>
+            </div>
+
+            {showAddGirl && (
+              <div className="bg-[#F8F9FA] p-4 border border-[#E0E2E6] mb-6">
+                <h3 className="font-bold text-[#1A1A1A] mb-4">Add New Girl</h3>
+                <div className="space-y-3">
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <input 
+                      placeholder="Name"
+                      value={newGirl.name}
+                      onChange={(e) => setNewGirl({...newGirl, name: e.target.value})}
+                      className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                    />
+                    <input 
+                      type="number"
+                      placeholder="Age"
+                      value={newGirl.age}
+                      onChange={(e) => setNewGirl({...newGirl, age: e.target.value})}
+                      className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                    />
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <input 
+                      placeholder="Location"
+                      value={newGirl.location}
+                      onChange={(e) => setNewGirl({...newGirl, location: e.target.value})}
+                      className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                    />
+                    <input 
+                      placeholder="School"
+                      value={newGirl.school}
+                      onChange={(e) => setNewGirl({...newGirl, school: e.target.value})}
+                      className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                    />
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <input 
+                      placeholder="Grade"
+                      value={newGirl.grade}
+                      onChange={(e) => setNewGirl({...newGirl, grade: e.target.value})}
+                      className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                    />
+                    <input 
+                      placeholder="Dream"
+                      value={newGirl.dream}
+                      onChange={(e) => setNewGirl({...newGirl, dream: e.target.value})}
+                      className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                    />
+                  </div>
+                  <input 
+                    placeholder="Image URL"
+                    value={newGirl.imageUrl}
+                    onChange={(e) => setNewGirl({...newGirl, imageUrl: e.target.value})}
+                    className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                  />
+                  <textarea 
+                    placeholder="Story"
+                    rows={3}
+                    value={newGirl.story}
+                    onChange={(e) => setNewGirl({...newGirl, story: e.target.value})}
+                    className="w-full px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                  />
+                  
+                  <div className="border-t border-[#E0E2E6] pt-3 mt-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="font-medium text-[#1A1A1A]">Sponsorship Needs</label>
+                      <button 
+                        type="button"
+                        onClick={addNeedField}
+                        className="text-[#003A99] text-sm font-medium hover:underline"
+                      >
+                        + Add Need
+                      </button>
+                    </div>
+                    {newGirl.needs.map((need, index) => (
+                      <div key={index} className="grid md:grid-cols-4 gap-2 mb-2 items-end">
+                        <input 
+                          placeholder="Item name"
+                          value={need.itemName}
+                          onChange={(e) => updateNeed(index, 'itemName', e.target.value)}
+                          className="px-3 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                        />
+                        <input 
+                          placeholder="Description"
+                          value={need.description}
+                          onChange={(e) => updateNeed(index, 'description', e.target.value)}
+                          className="px-3 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                        />
+                        <input 
+                          type="number"
+                          placeholder="Amount MK"
+                          value={need.amountMk}
+                          onChange={(e) => updateNeed(index, 'amountMk', e.target.value)}
+                          className="px-3 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                        />
+                        <div className="flex gap-2">
+                          <input 
+                            type="number"
+                            placeholder="Amount USD"
+                            value={need.amountUsd}
+                            onChange={(e) => updateNeed(index, 'amountUsd', e.target.value)}
+                            className="flex-1 px-3 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                          />
+                          {newGirl.needs.length > 1 && (
+                            <button 
+                              type="button"
+                              onClick={() => removeNeedField(index)}
+                              className="bg-[#E31E24] text-white px-3 py-2 hover:bg-[#C41A1E] transition-colors"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <button onClick={saveGirl} className="bg-[#1A7F00] text-white px-6 py-2 font-bold hover:bg-[#136000] transition-colors">
+                    Save Girl
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-2">
+              {girls.length === 0 ? (
+                <p className="text-[#4A4F59]">No girls added yet.</p>
+              ) : (
+                girls.map((girl: any) => (
+                  <div key={girl.id} className="flex items-center justify-between border border-[#E0E2E6] p-4 bg-white">
+                    <div className="flex items-center gap-4">
+                      {girl.image_url ? (
+                        <img src={girl.image_url} alt={girl.name} className="w-12 h-12 object-cover" />
+                      ) : (
+                        <div className="w-12 h-12 bg-[#F8F9FA] border border-[#E0E2E6] flex items-center justify-center">
+                          <Users className="w-6 h-6 text-[#4A4F59]" />
+                        </div>
+                      )}
+                      <div>
+                        <strong className="text-[#1A1A1A]">{girl.name}</strong>
+                        <p className="text-sm text-[#4A4F59]">{girl.age} years · {girl.school}</p>
+                        <p className="text-xs text-[#4A4F59]">{girl.location}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className={`text-xs px-2 py-0.5 font-medium ${
+                        girl.status === 'active' ? 'bg-[#1A7F00] text-white' : 'bg-[#E31E24] text-white'
+                      }`}>
+                        {girl.status}
+                      </span>
+                      <button onClick={() => deleteGirl(girl.id)} className="bg-[#E31E24] text-white px-3 py-1 text-sm hover:bg-[#C41A1E] transition-colors">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Join Requests Tab */}
+        {activeTab === 'join' && (
+          <div className="bg-white border border-[#E0E2E6] p-6">
+            <h2 className="text-2xl font-bold text-[#1A1A1A] mb-6">Join Requests</h2>
+
+            {/* Membership Applications */}
+            {joinRequests.memberships.length > 0 && (
+              <div className="mb-8">
+                <h3 className="font-bold text-[#003A99] mb-4 flex items-center gap-2">
+                  <UserPlus className="w-5 h-5" /> Membership Applications ({joinRequests.memberships.length})
+                </h3>
+                <div className="space-y-3">
+                  {joinRequests.memberships.map((app: any) => (
+                    <div key={app.id} className="border border-[#E0E2E6] p-4 bg-[#F8F9FA]">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <strong className="text-[#1A1A1A]">{app.full_name}</strong>
+                          <span className="text-sm text-[#4A4F59] ml-2">{app.email}</span>
+                        </div>
+                        <span className="text-sm font-medium text-[#003A99]">{app.category}</span>
+                      </div>
+                      <div className="text-sm text-[#4A4F59] mt-1">Phone: {app.phone}</div>
+                      {app.message && <div className="text-sm text-[#4A4F59] mt-1">{app.message}</div>}
+                      <div className="flex items-center justify-between mt-2">
+                        <span className={`text-xs px-2 py-0.5 font-medium ${getStatusBadge(app.status)}`}>
+                          {app.status}
+                        </span>
+                        <div className="flex gap-2">
+                          <button onClick={() => updateJoinStatus(app.id, 'membership', 'reviewed')} className="text-xs text-[#003A99] hover:underline">Review</button>
+                          <button onClick={() => updateJoinStatus(app.id, 'membership', 'contacted')} className="text-xs text-[#1A7F00] hover:underline">Contact</button>
+                          <button onClick={() => updateJoinStatus(app.id, 'membership', 'completed')} className="text-xs text-[#1A7F00] hover:underline">Complete</button>
+                          <button onClick={() => updateJoinStatus(app.id, 'membership', 'cancelled')} className="text-xs text-[#E31E24] hover:underline">Cancel</button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Volunteer Applications */}
+            {joinRequests.volunteers.length > 0 && (
+              <div className="mb-8">
+                <h3 className="font-bold text-[#003A99] mb-4 flex items-center gap-2">
+                  <Heart className="w-5 h-5" /> Volunteer Applications ({joinRequests.volunteers.length})
+                </h3>
+                <div className="space-y-3">
+                  {joinRequests.volunteers.map((app: any) => (
+                    <div key={app.id} className="border border-[#E0E2E6] p-4 bg-[#F8F9FA]">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <strong className="text-[#1A1A1A]">{app.full_name}</strong>
+                          <span className="text-sm text-[#4A4F59] ml-2">{app.email}</span>
+                        </div>
+                        <span className="text-sm font-medium text-[#1A7F00]">{app.skills}</span>
+                      </div>
+                      <div className="text-sm text-[#4A4F59] mt-1">Location: {app.location || 'Not specified'}</div>
+                      <div className="text-sm text-[#4A4F59]">Availability: {app.availability || 'Flexible'}</div>
+                      {app.message && <div className="text-sm text-[#4A4F59] mt-1">{app.message}</div>}
+                      <div className="flex items-center justify-between mt-2">
+                        <span className={`text-xs px-2 py-0.5 font-medium ${getStatusBadge(app.status)}`}>
+                          {app.status}
+                        </span>
+                        <div className="flex gap-2">
+                          <button onClick={() => updateJoinStatus(app.id, 'volunteer', 'reviewed')} className="text-xs text-[#003A99] hover:underline">Review</button>
+                          <button onClick={() => updateJoinStatus(app.id, 'volunteer', 'contacted')} className="text-xs text-[#1A7F00] hover:underline">Contact</button>
+                          <button onClick={() => updateJoinStatus(app.id, 'volunteer', 'completed')} className="text-xs text-[#1A7F00] hover:underline">Complete</button>
+                          <button onClick={() => updateJoinStatus(app.id, 'volunteer', 'cancelled')} className="text-xs text-[#E31E24] hover:underline">Cancel</button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Partnership Inquiries */}
+            {joinRequests.partners.length > 0 && (
+              <div className="mb-8">
+                <h3 className="font-bold text-[#003A99] mb-4 flex items-center gap-2">
+                  <Handshake className="w-5 h-5" /> Partnership Inquiries ({joinRequests.partners.length})
+                </h3>
+                <div className="space-y-3">
+                  {joinRequests.partners.map((app: any) => (
+                    <div key={app.id} className="border border-[#E0E2E6] p-4 bg-[#F8F9FA]">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <strong className="text-[#1A1A1A]">{app.organization_name}</strong>
+                          <span className="text-sm text-[#4A4F59] ml-2">{app.contact_person}</span>
+                        </div>
+                        <span className="text-sm font-medium text-[#003A99]">{app.partner_type}</span>
+                      </div>
+                      <div className="text-sm text-[#4A4F59] mt-1">{app.email} · {app.phone}</div>
+                      {app.proposed_partnership && <div className="text-sm text-[#4A4F59] mt-1">{app.proposed_partnership}</div>}
+                      {app.message && <div className="text-sm text-[#4A4F59] mt-1">{app.message}</div>}
+                      <div className="flex items-center justify-between mt-2">
+                        <span className={`text-xs px-2 py-0.5 font-medium ${getStatusBadge(app.status)}`}>
+                          {app.status}
+                        </span>
+                        <div className="flex gap-2">
+                          <button onClick={() => updateJoinStatus(app.id, 'partner', 'reviewed')} className="text-xs text-[#003A99] hover:underline">Review</button>
+                          <button onClick={() => updateJoinStatus(app.id, 'partner', 'contacted')} className="text-xs text-[#1A7F00] hover:underline">Contact</button>
+                          <button onClick={() => updateJoinStatus(app.id, 'partner', 'completed')} className="text-xs text-[#1A7F00] hover:underline">Complete</button>
+                          <button onClick={() => updateJoinStatus(app.id, 'partner', 'cancelled')} className="text-xs text-[#E31E24] hover:underline">Cancel</button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Work Applications */}
+            {joinRequests.work.length > 0 && (
+              <div className="mb-8">
+                <h3 className="font-bold text-[#003A99] mb-4 flex items-center gap-2">
+                  <Briefcase className="w-5 h-5" /> Work Applications ({joinRequests.work.length})
+                </h3>
+                <div className="space-y-3">
+                  {joinRequests.work.map((app: any) => (
+                    <div key={app.id} className="border border-[#E0E2E6] p-4 bg-[#F8F9FA]">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <strong className="text-[#1A1A1A]">{app.full_name}</strong>
+                          <span className="text-sm text-[#4A4F59] ml-2">{app.email}</span>
+                        </div>
+                        <span className="text-sm font-medium text-[#1A7F00]">{app.position}</span>
+                      </div>
+                      <div className="text-sm text-[#4A4F59] mt-1">Phone: {app.phone}</div>
+                      {app.experience && <div className="text-sm text-[#4A4F59] mt-1">{app.experience}</div>}
+                      {app.message && <div className="text-sm text-[#4A4F59] mt-1">{app.message}</div>}
+                      <div className="flex items-center justify-between mt-2">
+                        <span className={`text-xs px-2 py-0.5 font-medium ${getStatusBadge(app.status)}`}>
+                          {app.status}
+                        </span>
+                        <div className="flex gap-2">
+                          <button onClick={() => updateJoinStatus(app.id, 'work', 'reviewed')} className="text-xs text-[#003A99] hover:underline">Review</button>
+                          <button onClick={() => updateJoinStatus(app.id, 'work', 'contacted')} className="text-xs text-[#1A7F00] hover:underline">Contact</button>
+                          <button onClick={() => updateJoinStatus(app.id, 'work', 'completed')} className="text-xs text-[#1A7F00] hover:underline">Complete</button>
+                          <button onClick={() => updateJoinStatus(app.id, 'work', 'cancelled')} className="text-xs text-[#E31E24] hover:underline">Cancel</button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {joinRequests.memberships.length === 0 && joinRequests.volunteers.length === 0 && joinRequests.partners.length === 0 && joinRequests.work.length === 0 && (
+              <p className="text-[#4A4F59]">No join requests yet.</p>
             )}
           </div>
         )}
