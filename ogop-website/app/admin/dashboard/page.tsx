@@ -22,7 +22,6 @@ import {
   Clock,
   UserPlus,
   Briefcase,
-  Handshake,
   CalendarHeart,
   Plus,
   Trash2,
@@ -1147,7 +1146,7 @@ export default function AdminDashboard() {
             {joinRequests.partners.length > 0 && (
               <div className="mb-8">
                 <h3 className="font-bold text-[#003A99] mb-4 flex items-center gap-2">
-                  <Handshake className="w-5 h-5" /> Partnership Inquiries ({joinRequests.partners.length})
+                  <HeartHandshake className="w-5 h-5" /> Partnership Inquiries ({joinRequests.partners.length})
                 </h3>
                 <div className="space-y-3">
                   {joinRequests.partners.map((app: any) => (
