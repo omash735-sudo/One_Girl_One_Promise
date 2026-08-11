@@ -6,23 +6,82 @@ import { ArrowLeft, Bus, CheckCircle, Loader2 } from 'lucide-react'
 
 export default function TransportPage() {
   const [selectedAmount, setSelectedAmount] = useState<string>('45')
+  const [customAmount, setCustomAmount] = useState<string>('')
   const [donorName, setDonorName] = useState('')
   const [donorEmail, setDonorEmail] = useState('')
   const [isAnonymous, setIsAnonymous] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
+  const [currency, setCurrency] = useState<'USD' | 'MK'>('USD')
 
-  const transportOptions = [
+  const EXCHANGE_RATE = 4500
+
+  const transportOptionsUSD = [
     { amount: '15', label: 'Monthly Transport' },
     { amount: '45', label: 'Term Transport' },
     { amount: '150', label: 'Year Transport' }
   ]
 
+  const transportOptionsMK = [
+    { amount: '67500', label: 'Monthly Transport' },
+    { amount: '202500', label: 'Term Transport' },
+    { amount: '675000', label: 'Year Transport' }
+  ]
+
+  const getTransportOptions = () => {
+    return currency === 'USD' ? transportOptionsUSD : transportOptionsMK
+  }
+
+  const getDisplayAmount = (amount: string) => {
+    if (currency === 'USD') {
+      return `$${amount}`
+    } else {
+      return `MK ${parseInt(amount).toLocaleString()}`
+    }
+  }
+
+  const getMKEquivalent = (usdAmount: string) => {
+    return Math.round(parseFloat(usdAmount) * EXCHANGE_RATE)
+  }
+
+  const getUSDAmount = (mkAmount: string) => {
+    return (parseFloat(mkAmount) / EXCHANGE_RATE).toFixed(2)
+  }
+
+  const handleCurrencyToggle = (newCurrency: 'USD' | 'MK') => {
+    setCurrency(newCurrency)
+    setSelectedAmount('')
+    setCustomAmount('')
+  }
+
+  const handlePresetClick = (amount: string) => {
+    setSelectedAmount(amount)
+    setCustomAmount('')
+  }
+
+  const handleCustomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCustomAmount(e.target.value)
+    setSelectedAmount('')
+  }
+
+  const getSubmissionAmount = () => {
+    const amount = customAmount || selectedAmount
+    if (!amount) return 0
+    
+    if (currency === 'USD') {
+      return parseFloat(amount)
+    } else {
+      return parseFloat(getUSDAmount(amount))
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
     setError('')
+
+    const amount = getSubmissionAmount()
 
     try {
       const res = await fetch('/api/support/donate', {
@@ -31,10 +90,13 @@ export default function TransportPage() {
         body: JSON.stringify({
           donorName: isAnonymous ? 'Anonymous' : donorName || 'Anonymous',
           donorEmail: isAnonymous ? 'anonymous@donor.com' : donorEmail || 'anonymous@donor.com',
-          amount: parseFloat(selectedAmount),
+          amount: amount,
+          currency: currency,
           frequency: 'one-time',
           paymentMethod: 'PayPal',
-          isAnonymous: isAnonymous
+          isAnonymous: isAnonymous,
+          amountMK: currency === 'MK' ? parseFloat(customAmount || selectedAmount) : null,
+          purpose: 'Transportation'
         })
       })
 
@@ -44,7 +106,8 @@ export default function TransportPage() {
         setSubmitted(true)
         setDonorName('')
         setDonorEmail('')
-        setSelectedAmount('45')
+        setSelectedAmount('')
+        setCustomAmount('')
         setIsAnonymous(false)
       } else {
         setError(data.error || 'Something went wrong. Please try again.')
@@ -82,6 +145,11 @@ export default function TransportPage() {
           <div className="w-16 h-1 bg-[#FFEB00] mx-auto mt-6" />
         </div>
       </section>
+
+      {/* Exchange Rate Notice */}
+      <div className="bg-[#FFEB00] text-[#1A1A1A] py-2 px-4 text-center text-sm font-medium">
+        Exchange Rate: 1 USD ≈ 4,500 MK (Malawi Kwacha)
+      </div>
 
       {/* Why It Matters */}
       <section className="py-12 bg-white border-b border-[#E0E2E6]">
@@ -144,31 +212,101 @@ export default function TransportPage() {
                   Your contribution helps cover transportation costs for girls returning to school.
                 </p>
 
+                {/* Currency Selector */}
+                <div className="mb-6">
+                  <label className="block font-semibold text-[#1A1A1A] mb-3">
+                    Currency
+                  </label>
+                  <div className="flex gap-3">
+                    <button
+                      type="button"
+                      onClick={() => handleCurrencyToggle('USD')}
+                      className={`px-6 py-2 font-bold transition-colors ${
+                        currency === 'USD'
+                          ? 'bg-[#003A99] text-white'
+                          : 'border border-[#E0E2E6] text-[#1A1A1A] hover:border-[#003A99]'
+                      }`}
+                    >
+                      USD
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleCurrencyToggle('MK')}
+                      className={`px-6 py-2 font-bold transition-colors ${
+                        currency === 'MK'
+                          ? 'bg-[#003A99] text-white'
+                          : 'border border-[#E0E2E6] text-[#1A1A1A] hover:border-[#003A99]'
+                      }`}
+                    >
+                      MK
+                    </button>
+                  </div>
+                </div>
+
                 <div className="space-y-3 max-w-xs mx-auto mb-6">
-                  {transportOptions.map((option) => (
+                  {getTransportOptions().map((option) => (
                     <div 
                       key={option.amount}
                       className={`flex justify-between items-center border p-3 cursor-pointer transition-colors ${
-                        selectedAmount === option.amount 
+                        selectedAmount === option.amount && !customAmount
                           ? 'border-[#003A99] bg-[#F8F9FA]' 
                           : 'border-[#E0E2E6] hover:border-[#003A99]'
                       }`}
-                      onClick={() => setSelectedAmount(option.amount)}
+                      onClick={() => handlePresetClick(option.amount)}
                     >
                       <div className="flex items-center gap-3">
                         <input
                           type="radio"
                           name="transportAmount"
                           value={option.amount}
-                          checked={selectedAmount === option.amount}
-                          onChange={() => setSelectedAmount(option.amount)}
+                          checked={selectedAmount === option.amount && !customAmount}
+                          onChange={() => handlePresetClick(option.amount)}
                           className="w-4 h-4 accent-[#003A99]"
                         />
-                        <span className="font-medium text-[#1A1A1A]">{option.label}</span>
+                        <div>
+                          <span className="font-medium text-[#1A1A1A]">{option.label}</span>
+                          {currency === 'USD' && (
+                            <div className="text-xs text-[#4A4F59]">
+                              MK {getMKEquivalent(option.amount).toLocaleString()}
+                            </div>
+                          )}
+                          {currency === 'MK' && (
+                            <div className="text-xs text-[#4A4F59]">
+                              ≈ ${getUSDAmount(option.amount)}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                      <span className="font-bold text-[#003A99]">${option.amount}</span>
+                      <span className="font-bold text-[#003A99]">{getDisplayAmount(option.amount)}</span>
                     </div>
                   ))}
+                </div>
+
+                {/* Custom Amount */}
+                <div className="mb-6">
+                  <label className="block font-medium text-[#1A1A1A] mb-2">
+                    Custom Amount ({currency})
+                  </label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="number"
+                      value={customAmount}
+                      onChange={handleCustomChange}
+                      placeholder={`Enter amount (${currency})`}
+                      className="flex-1 px-4 py-3 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                      min="1"
+                    />
+                    {customAmount && currency === 'USD' && (
+                      <span className="text-sm text-[#4A4F59] whitespace-nowrap">
+                        ≈ MK {Math.round(parseFloat(customAmount) * EXCHANGE_RATE).toLocaleString()}
+                      </span>
+                    )}
+                    {customAmount && currency === 'MK' && (
+                      <span className="text-sm text-[#4A4F59] whitespace-nowrap">
+                        ≈ ${getUSDAmount(customAmount)}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <div className="mb-4">
@@ -224,6 +362,12 @@ export default function TransportPage() {
                     'Support Transport'
                   )}
                 </button>
+
+                <p className="text-xs text-[#4A4F59] text-center mt-4">
+                  {currency === 'USD' 
+                    ? 'Your donation is secure and will be processed through PayPal.' 
+                    : 'You will be redirected to complete your bank transfer or mobile money payment.'}
+                </p>
               </form>
             )}
           </div>
