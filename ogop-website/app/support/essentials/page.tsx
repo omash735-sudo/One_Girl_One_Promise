@@ -2,7 +2,17 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, ShoppingBag, CheckCircle, Loader2 } from 'lucide-react'
+import { 
+  ArrowLeft, 
+  ShoppingBag, 
+  CheckCircle, 
+  Loader2,
+  Heart,
+  Shirt,
+  BookOpen,
+  Droplets,
+  Hospital
+} from 'lucide-react'
 
 export default function EssentialsPage() {
   const [selectedAmount, setSelectedAmount] = useState<string>('60')
@@ -91,27 +101,27 @@ export default function EssentialsPage() {
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-3xl mx-auto">
             <div className="border border-[#E0E2E6] p-4 bg-[#F8F9FA] text-center">
-              <div className="text-4xl mb-2">🛒</div>
+              <ShoppingBag className="w-8 h-8 text-[#003A99] mx-auto mb-2" />
               <p className="font-medium text-[#1A1A1A]">Groceries</p>
             </div>
             <div className="border border-[#E0E2E6] p-4 bg-[#F8F9FA] text-center">
-              <div className="text-4xl mb-2">🧴</div>
+              <Heart className="w-8 h-8 text-[#1A7F00] mx-auto mb-2" />
               <p className="font-medium text-[#1A1A1A]">Personal Care</p>
             </div>
             <div className="border border-[#E0E2E6] p-4 bg-[#F8F9FA] text-center">
-              <div className="text-4xl mb-2">👕</div>
+              <Shirt className="w-8 h-8 text-[#003A99] mx-auto mb-2" />
               <p className="font-medium text-[#1A1A1A]">Clothing</p>
             </div>
             <div className="border border-[#E0E2E6] p-4 bg-[#F8F9FA] text-center">
-              <div className="text-4xl mb-2">📚</div>
+              <BookOpen className="w-8 h-8 text-[#1A7F00] mx-auto mb-2" />
               <p className="font-medium text-[#1A1A1A]">School Supplies</p>
             </div>
             <div className="border border-[#E0E2E6] p-4 bg-[#F8F9FA] text-center">
-              <div className="text-4xl mb-2">🩸</div>
+              <Droplets className="w-8 h-8 text-[#003A99] mx-auto mb-2" />
               <p className="font-medium text-[#1A1A1A]">Sanitary Products</p>
             </div>
             <div className="border border-[#E0E2E6] p-4 bg-[#F8F9FA] text-center">
-              <div className="text-4xl mb-2">🏥</div>
+              <Hospital className="w-8 h-8 text-[#1A7F00] mx-auto mb-2" />
               <p className="font-medium text-[#1A1A1A]">Health Items</p>
             </div>
           </div>
