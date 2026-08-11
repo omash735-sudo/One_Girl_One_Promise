@@ -20,8 +20,8 @@ const slides: Slide[] = [
     title: 'Yes, I Can Become',
     description: 'Restoring hope and opportunity to teen mothers in rural Malawi through education and support.',
     image: 'https://res.cloudinary.com/dfsvnaslv/image/upload/v1786228154/IMG-20260809-WA0000_kq2bnn.jpg',
-    ctaText: 'Support a Girl',
-    ctaLink: '/donate',
+    ctaText: 'Sponsor a Girl',
+    ctaLink: '/support/sponsor',
     badge: 'Our Mission'
   },
   {
@@ -128,7 +128,7 @@ export default function HeroCarousel() {
           </div>
         ))}
 
-        {/* Navigation Controls - Only visible on hover or touch */}
+        {/* Navigation Controls - Only visible on hover */}
         <div className="absolute inset-0 z-30 pointer-events-none">
           <div className="relative h-full max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
             <button
