@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, HeartHandshake, CheckCircle } from 'lucide-react'
+import { ArrowLeft, HeartHandshake, CheckCircle, Loader2 } from 'lucide-react'
 
 export default function DonatePage() {
   const [selectedAmount, setSelectedAmount] = useState<string>('25')
@@ -10,14 +10,50 @@ export default function DonatePage() {
   const [donorName, setDonorName] = useState('')
   const [donorEmail, setDonorEmail] = useState('')
   const [isAnonymous, setIsAnonymous] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState('')
 
   const presetAmounts = ['10', '25', '50', '100']
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setSubmitted(true)
-    // Payment integration would go here
+    setSubmitting(true)
+    setError('')
+
+    const amount = customAmount || selectedAmount
+
+    try {
+      const res = await fetch('/api/support/donate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          donorName: isAnonymous ? 'Anonymous' : donorName || 'Anonymous',
+          donorEmail: isAnonymous ? 'anonymous@donor.com' : donorEmail || 'anonymous@donor.com',
+          amount: parseFloat(amount),
+          frequency: 'one-time',
+          paymentMethod: 'PayPal',
+          isAnonymous: isAnonymous
+        })
+      })
+
+      const data = await res.json()
+
+      if (res.ok) {
+        setSubmitted(true)
+        setDonorName('')
+        setDonorEmail('')
+        setSelectedAmount('25')
+        setCustomAmount('')
+        setIsAnonymous(false)
+      } else {
+        setError(data.error || 'Something went wrong. Please try again.')
+      }
+    } catch (err) {
+      setError('Network error. Please try again.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -52,17 +88,26 @@ export default function DonatePage() {
           <div className="border border-[#E0E2E6] p-6 md:p-8 bg-white">
             {submitted ? (
               <div className="text-center py-8">
-                <div className="bg-[#1A7F00] text-white p-4 mb-6">
+                <div className="bg-[#1A7F00] text-white p-6 mb-6">
                   <CheckCircle className="w-12 h-12 mx-auto mb-3" />
                   <h3 className="text-2xl font-bold">Thank You!</h3>
-                  <p className="text-white/80">Your donation is making a difference in the lives of young mothers.</p>
+                  <p className="text-white/80 mt-2">Your donation is making a difference in the lives of young mothers.</p>
+                  <p className="text-white/60 text-sm mt-4">A confirmation has been sent to your email.</p>
                 </div>
-                <Link 
-                  href="/" 
-                  className="inline-block bg-[#003A99] text-white px-6 py-3 font-bold hover:bg-[#002A70] transition-colors"
-                >
-                  Return Home
-                </Link>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Link 
+                    href="/" 
+                    className="inline-block bg-[#003A99] text-white px-6 py-3 font-bold hover:bg-[#002A70] transition-colors"
+                  >
+                    Return Home
+                  </Link>
+                  <Link 
+                    href="/support" 
+                    className="inline-block border-2 border-[#003A99] text-[#003A99] px-6 py-3 font-bold hover:bg-[#003A99] hover:text-white transition-colors"
+                  >
+                    Support More
+                  </Link>
+                </div>
               </div>
             ) : (
               <form onSubmit={handleSubmit}>
@@ -84,7 +129,7 @@ export default function DonatePage() {
                           setSelectedAmount(amount)
                           setCustomAmount('')
                         }}
-                        className={`py-2 font-bold transition-colors ${
+                        className={`py-3 font-bold transition-colors ${
                           selectedAmount === amount && !customAmount
                             ? 'bg-[#003A99] text-white'
                             : 'border border-[#E0E2E6] text-[#1A1A1A] hover:border-[#003A99]'
@@ -105,6 +150,7 @@ export default function DonatePage() {
                       }}
                       placeholder="Enter amount"
                       className="flex-1 px-4 py-2 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
+                      min="1"
                     />
                   </div>
                 </div>
@@ -118,7 +164,7 @@ export default function DonatePage() {
                       placeholder="Full Name"
                       value={donorName}
                       onChange={(e) => setDonorName(e.target.value)}
-                      required
+                      required={!isAnonymous}
                       className="px-4 py-3 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
                     />
                     <input
@@ -126,7 +172,7 @@ export default function DonatePage() {
                       placeholder="Email Address"
                       value={donorEmail}
                       onChange={(e) => setDonorEmail(e.target.value)}
-                      required
+                      required={!isAnonymous}
                       className="px-4 py-3 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
                     />
                   </div>
@@ -151,32 +197,52 @@ export default function DonatePage() {
                   <div className="grid grid-cols-2 gap-3">
                     <button
                       type="button"
-                      className="border border-[#E0E2E6] p-3 text-center hover:border-[#003A99] transition-colors"
+                      className="border border-[#003A99] bg-[#003A99]/5 p-3 text-center font-medium text-[#003A99]"
                     >
-                      <span className="font-medium">PayPal</span>
+                      PayPal
                     </button>
                     <button
                       type="button"
-                      className="border border-[#E0E2E6] p-3 text-center hover:border-[#003A99] transition-colors"
+                      className="border border-[#E0E2E6] p-3 text-center font-medium text-[#4A4F59] hover:border-[#003A99] transition-colors"
                     >
-                      <span className="font-medium">Bank Transfer</span>
+                      Bank Transfer
                     </button>
                     <button
                       type="button"
-                      className="border border-[#E0E2E6] p-3 text-center hover:border-[#003A99] transition-colors col-span-2"
+                      className="border border-[#E0E2E6] p-3 text-center font-medium text-[#4A4F59] hover:border-[#003A99] transition-colors col-span-2"
                     >
-                      <span className="font-medium">Mobile Money</span>
+                      Mobile Money
                     </button>
                   </div>
+                  <p className="text-xs text-[#4A4F59] mt-2">
+                    PayPal is the primary payment method. Other options available upon request.
+                  </p>
                 </div>
 
-                {/* Submit Button */}
+                {error && (
+                  <div className="bg-[#E31E24] text-white px-4 py-3 mb-4 text-center text-sm">
+                    {error}
+                  </div>
+                )}
+
                 <button
                   type="submit"
-                  className="w-full bg-[#1A7F00] text-white py-3 font-bold hover:bg-[#136000] transition-colors"
+                  disabled={submitting}
+                  className="w-full bg-[#1A7F00] text-white py-3 font-bold hover:bg-[#136000] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                 >
-                  Donate Now
+                  {submitting ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    'Donate Now'
+                  )}
                 </button>
+
+                <p className="text-xs text-[#4A4F59] text-center mt-4">
+                  Your donation is secure and will be processed through PayPal.
+                </p>
               </form>
             )}
           </div>
