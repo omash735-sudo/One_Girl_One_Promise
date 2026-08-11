@@ -219,8 +219,11 @@ export default function Navbar() {
                             href={option.href}
                             className="block px-4 py-2.5 text-sm font-medium text-[#1A1A1A] hover:text-[#1A7F00] hover:bg-[#F8F9FA] transition-colors"
                             onClick={() => {
-                              setIsMobileMenuOpen(false)
-                              setIsJoinUsOpen(false)
+                              // Close the mobile menu after navigation
+                              setTimeout(() => {
+                                setIsMobileMenuOpen(false)
+                                setIsJoinUsOpen(false)
+                              }, 150)
                             }}
                           >
                             {option.label}
