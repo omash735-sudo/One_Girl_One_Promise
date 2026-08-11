@@ -3,13 +3,17 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Lock, Mail } from 'lucide-react'
-import Image from 'next/image'
 
 export default function AdminLogin() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [showReset, setShowReset] = useState(false)
+  const [resetKey, setResetKey] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [resetMessage, setResetMessage] = useState('')
+  const [resetLoading, setResetLoading] = useState(false)
   const router = useRouter()
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -40,6 +44,42 @@ export default function AdminLogin() {
     }
   }
 
+  const handleReset = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setResetLoading(true)
+    setError('')
+    setResetMessage('')
+
+    try {
+      const res = await fetch('/api/admin/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          resetKey, 
+          newPassword 
+        })
+      })
+
+      const data = await res.json()
+
+      if (data.success) {
+        setResetMessage(data.message)
+        setTimeout(() => {
+          setShowReset(false)
+          setResetKey('')
+          setNewPassword('')
+          setResetMessage('')
+        }, 3000)
+      } else {
+        setError(data.error || 'Reset failed')
+      }
+    } catch (err) {
+      setError('Network error')
+    } finally {
+      setResetLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#003A99] px-4">
       <div className="w-full max-w-md border border-[#E0E2E6] bg-white p-8">
@@ -55,49 +95,121 @@ export default function AdminLogin() {
           <p className="text-[#4A4F59] text-sm mt-1">One Girl One Promise</p>
         </div>
         
-        <form onSubmit={handleLogin}>
-          <div className="mb-4">
-            <div className="flex items-center border border-[#E0E2E6] focus-within:border-[#003A99] transition-colors">
-              <Mail className="w-5 h-5 text-[#4A4F59] ml-3 flex-shrink-0" />
+        {!showReset ? (
+          <form onSubmit={handleLogin}>
+            <div className="mb-4">
+              <div className="flex items-center border border-[#E0E2E6] focus-within:border-[#003A99] transition-colors">
+                <Mail className="w-5 h-5 text-[#4A4F59] ml-3 flex-shrink-0" />
+                <input
+                  type="text"
+                  placeholder="Username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                  className="w-full px-3 py-3 outline-none bg-transparent"
+                />
+              </div>
+            </div>
+            
+            <div className="mb-6">
+              <div className="flex items-center border border-[#E0E2E6] focus-within:border-[#003A99] transition-colors">
+                <Lock className="w-5 h-5 text-[#4A4F59] ml-3 flex-shrink-0" />
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="w-full px-3 py-3 outline-none bg-transparent"
+                />
+              </div>
+            </div>
+            
+            {error && (
+              <div className="bg-[#E31E24] text-white px-4 py-2 mb-4 text-center text-sm">
+                {error}
+              </div>
+            )}
+            
+            <button 
+              type="submit" 
+              disabled={loading}
+              className="w-full bg-[#1A7F00] text-white py-3 font-bold hover:bg-[#136000] transition-colors disabled:opacity-50"
+            >
+              {loading ? 'Logging in...' : 'Login'}
+            </button>
+            
+            <button
+              type="button"
+              onClick={() => setShowReset(true)}
+              className="w-full text-center text-sm text-[#003A99] hover:underline mt-3"
+            >
+              Forgot Password?
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={handleReset}>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-[#1A1A1A] mb-1">
+                Reset Key
+              </label>
               <input
                 type="text"
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Enter reset key"
+                value={resetKey}
+                onChange={(e) => setResetKey(e.target.value)}
                 required
-                className="w-full px-3 py-3 outline-none bg-transparent"
+                className="w-full px-4 py-3 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
               />
+              <p className="text-xs text-[#4A4F59] mt-1">
+                Contact administrator for the reset key.
+              </p>
             </div>
-          </div>
-          
-          <div className="mb-6">
-            <div className="flex items-center border border-[#E0E2E6] focus-within:border-[#003A99] transition-colors">
-              <Lock className="w-5 h-5 text-[#4A4F59] ml-3 flex-shrink-0" />
+            
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-[#1A1A1A] mb-1">
+                New Password
+              </label>
               <input
                 type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter new password (min 6 characters)"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
                 required
-                className="w-full px-3 py-3 outline-none bg-transparent"
+                minLength={6}
+                className="w-full px-4 py-3 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99]"
               />
             </div>
-          </div>
-          
-          {error && (
-            <div className="bg-[#E31E24] text-white px-4 py-2 mb-4 text-center text-sm">
-              {error}
-            </div>
-          )}
-          
-          <button 
-            type="submit" 
-            disabled={loading}
-            className="w-full bg-[#1A7F00] text-white py-3 font-bold hover:bg-[#136000] transition-colors disabled:opacity-50"
-          >
-            {loading ? 'Logging in...' : 'Login'}
-          </button>
-        </form>
+            
+            {error && (
+              <div className="bg-[#E31E24] text-white px-4 py-2 mb-4 text-center text-sm">
+                {error}
+              </div>
+            )}
+            
+            {resetMessage && (
+              <div className="bg-[#1A7F00] text-white px-4 py-2 mb-4 text-center text-sm">
+                {resetMessage}
+              </div>
+            )}
+            
+            <button 
+              type="submit" 
+              disabled={resetLoading}
+              className="w-full bg-[#1A7F00] text-white py-3 font-bold hover:bg-[#136000] transition-colors disabled:opacity-50"
+            >
+              {resetLoading ? 'Resetting...' : 'Reset Password'}
+            </button>
+            
+            <button
+              type="button"
+              onClick={() => setShowReset(false)}
+              className="w-full text-center text-sm text-[#4A4F59] hover:underline mt-3"
+            >
+              Back to Login
+            </button>
+          </form>
+        )}
       </div>
     </div>
   )
