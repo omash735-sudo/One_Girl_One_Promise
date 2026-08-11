@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Lock, Mail } from 'lucide-react'
+import Image from 'next/image'
 
 export default function AdminLogin() {
   const [username, setUsername] = useState('')
@@ -43,8 +44,12 @@ export default function AdminLogin() {
     <div className="min-h-screen flex items-center justify-center bg-[#003A99] px-4">
       <div className="w-full max-w-md border border-[#E0E2E6] bg-white p-8">
         <div className="text-center mb-8">
-          <div className="w-20 h-20 bg-[#003A99] mx-auto flex items-center justify-center mb-4">
-            <span className="text-white font-bold text-2xl">OGOP</span>
+          <div className="w-20 h-20 bg-white mx-auto flex items-center justify-center mb-4 border border-[#E0E2E6] overflow-hidden">
+            <img 
+              src="https://res.cloudinary.com/dfsvnaslv/image/upload/v1786219258/file_0000000034e48246addcab843282da68_260808214416_l1r4bm.png"
+              alt="One Girl One Promise Logo"
+              className="w-full h-full object-contain p-2"
+            />
           </div>
           <h2 className="text-2xl font-bold text-[#1A1A1A]">Admin Login</h2>
           <p className="text-[#4A4F59] text-sm mt-1">One Girl One Promise</p>
