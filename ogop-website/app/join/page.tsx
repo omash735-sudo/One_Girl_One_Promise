@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { 
   UserPlus, 
   Heart, 
-  Handshake, 
+  HandHelping, 
   Briefcase,
   ArrowRight
 } from 'lucide-react'
@@ -29,7 +29,7 @@ export default function JoinPage() {
       id: 'partner',
       title: 'Partner With Us',
       description: 'Partner your organization with OGOP to create lasting impact.',
-      icon: <Handshake className="w-8 h-8 text-[#003A99]" />,
+      icon: <HandHelping className="w-8 h-8 text-[#003A99]" />,
       link: '/join/partner',
       cta: 'Partner Now'
     },
