@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Package, CheckCircle, Plus, Minus } from 'lucide-react'
+import { ArrowLeft, Package, CheckCircle, Loader2 } from 'lucide-react'
 
 export default function SuppliesPage() {
   const [formData, setFormData] = useState({
@@ -16,16 +16,49 @@ export default function SuppliesPage() {
     deliveryMethod: 'pickup',
     notes: ''
   })
+  const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState('')
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setSubmitted(true)
-    // Form submission logic here
+    setSubmitting(true)
+    setError('')
+
+    try {
+      const res = await fetch('/api/support/supplies', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      })
+
+      const data = await res.json()
+
+      if (res.ok) {
+        setSubmitted(true)
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          location: '',
+          itemType: '',
+          quantity: '',
+          condition: 'new',
+          deliveryMethod: 'pickup',
+          notes: ''
+        })
+      } else {
+        setError(data.error || 'Something went wrong. Please try again.')
+      }
+    } catch (err) {
+      setError('Network error. Please try again.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   const supplyItems = [
@@ -73,7 +106,7 @@ export default function SuppliesPage() {
             Items We <span className="text-[#003A99]">Need</span>
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {supplyItems.slice(0, 7).map((item) => (
+            {supplyItems.map((item) => (
               <div key={item} className="border border-[#E0E2E6] p-4 bg-[#F8F9FA] text-center text-sm font-medium text-[#1A1A1A]">
                 {item}
               </div>
@@ -88,17 +121,25 @@ export default function SuppliesPage() {
           <div className="border border-[#E0E2E6] p-6 md:p-8 bg-white">
             {submitted ? (
               <div className="text-center py-8">
-                <div className="bg-[#1A7F00] text-white p-4 mb-6">
+                <div className="bg-[#1A7F00] text-white p-6 mb-6">
                   <CheckCircle className="w-12 h-12 mx-auto mb-3" />
                   <h3 className="text-2xl font-bold">Thank You!</h3>
-                  <p className="text-white/80">Someone from OGOP will contact you shortly to arrange your donation.</p>
+                  <p className="text-white/80 mt-2">Someone from OGOP will contact you shortly to arrange your donation.</p>
                 </div>
-                <Link 
-                  href="/" 
-                  className="inline-block bg-[#003A99] text-white px-6 py-3 font-bold hover:bg-[#002A70] transition-colors"
-                >
-                  Return Home
-                </Link>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Link 
+                    href="/" 
+                    className="inline-block bg-[#003A99] text-white px-6 py-3 font-bold hover:bg-[#002A70] transition-colors"
+                  >
+                    Return Home
+                  </Link>
+                  <Link 
+                    href="/support" 
+                    className="inline-block border-2 border-[#003A99] text-[#003A99] px-6 py-3 font-bold hover:bg-[#003A99] hover:text-white transition-colors"
+                  >
+                    Support More
+                  </Link>
+                </div>
               </div>
             ) : (
               <form onSubmit={handleSubmit}>
@@ -201,11 +242,25 @@ export default function SuppliesPage() {
                     className="w-full px-4 py-3 border border-[#E0E2E6] focus:outline-none focus:border-[#003A99] resize-vertical"
                   />
 
+                  {error && (
+                    <div className="bg-[#E31E24] text-white px-4 py-3 text-center text-sm">
+                      {error}
+                    </div>
+                  )}
+
                   <button
                     type="submit"
-                    className="w-full bg-[#1A7F00] text-white py-3 font-bold hover:bg-[#136000] transition-colors"
+                    disabled={submitting}
+                    className="w-full bg-[#1A7F00] text-white py-3 font-bold hover:bg-[#136000] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                   >
-                    Submit Donation Offer
+                    {submitting ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        Submitting...
+                      </>
+                    ) : (
+                      'Submit Donation Offer'
+                    )}
                   </button>
                 </div>
               </form>
