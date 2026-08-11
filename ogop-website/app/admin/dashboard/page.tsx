@@ -7,7 +7,7 @@ import {
   Info, 
   BookOpen, 
   Star, 
-  ChartLine, 
+  BarChart, 
   Envelope, 
   LogOut,
   HeartHandshake,
@@ -83,7 +83,7 @@ export default function AdminDashboard() {
     { id: 'about', label: 'About', icon: <Info className="w-4 h-4" /> },
     { id: 'programs', label: 'Programs', icon: <BookOpen className="w-4 h-4" /> },
     { id: 'stories', label: 'Stories', icon: <Star className="w-4 h-4" /> },
-    { id: 'stats', label: 'Impact Stats', icon: <ChartLine className="w-4 h-4" /> },
+    { id: 'stats', label: 'Impact Stats', icon: <BarChart className="w-4 h-4" /> },
     { id: 'messages', label: 'Messages', icon: <Envelope className="w-4 h-4" /> },
     { id: 'support', label: 'Support', icon: <HeartHandshake className="w-4 h-4" /> },
   ]
@@ -646,6 +646,7 @@ export default function AdminDashboard() {
                           <button onClick={() => updateSupportStatus(donation.id, 'donation', 'reviewed')} className="text-xs text-[#003A99] hover:underline">Review</button>
                           <button onClick={() => updateSupportStatus(donation.id, 'donation', 'contacted')} className="text-xs text-[#1A7F00] hover:underline">Contact</button>
                           <button onClick={() => updateSupportStatus(donation.id, 'donation', 'completed')} className="text-xs text-[#1A7F00] hover:underline">Complete</button>
+                          <button onClick={() => updateSupportStatus(donation.id, 'donation', 'cancelled')} className="text-xs text-[#E31E24] hover:underline">Cancel</button>
                         </div>
                       </div>
                     </div>
@@ -682,6 +683,7 @@ export default function AdminDashboard() {
                           <button onClick={() => updateSupportStatus(supply.id, 'supply', 'reviewed')} className="text-xs text-[#003A99] hover:underline">Review</button>
                           <button onClick={() => updateSupportStatus(supply.id, 'supply', 'contacted')} className="text-xs text-[#1A7F00] hover:underline">Contact</button>
                           <button onClick={() => updateSupportStatus(supply.id, 'supply', 'completed')} className="text-xs text-[#1A7F00] hover:underline">Complete</button>
+                          <button onClick={() => updateSupportStatus(supply.id, 'supply', 'cancelled')} className="text-xs text-[#E31E24] hover:underline">Cancel</button>
                         </div>
                       </div>
                     </div>
@@ -718,6 +720,7 @@ export default function AdminDashboard() {
                           <button onClick={() => updateSupportStatus(fundraiser.id, 'fundraiser', 'reviewed')} className="text-xs text-[#003A99] hover:underline">Review</button>
                           <button onClick={() => updateSupportStatus(fundraiser.id, 'fundraiser', 'contacted')} className="text-xs text-[#1A7F00] hover:underline">Contact</button>
                           <button onClick={() => updateSupportStatus(fundraiser.id, 'fundraiser', 'completed')} className="text-xs text-[#1A7F00] hover:underline">Complete</button>
+                          <button onClick={() => updateSupportStatus(fundraiser.id, 'fundraiser', 'cancelled')} className="text-xs text-[#E31E24] hover:underline">Cancel</button>
                         </div>
                       </div>
                     </div>
@@ -751,6 +754,7 @@ export default function AdminDashboard() {
                           <button onClick={() => updateSupportStatus(sponsorship.id, 'sponsorship', 'reviewed')} className="text-xs text-[#003A99] hover:underline">Review</button>
                           <button onClick={() => updateSupportStatus(sponsorship.id, 'sponsorship', 'contacted')} className="text-xs text-[#1A7F00] hover:underline">Contact</button>
                           <button onClick={() => updateSupportStatus(sponsorship.id, 'sponsorship', 'completed')} className="text-xs text-[#1A7F00] hover:underline">Complete</button>
+                          <button onClick={() => updateSupportStatus(sponsorship.id, 'sponsorship', 'cancelled')} className="text-xs text-[#E31E24] hover:underline">Cancel</button>
                         </div>
                       </div>
                     </div>
