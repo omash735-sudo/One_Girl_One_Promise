@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Lock, Mail } from 'lucide-react'
 
 export default function AdminLogin() {
   const [username, setUsername] = useState('')
@@ -39,103 +40,60 @@ export default function AdminLogin() {
   }
 
   return (
-    <div className="admin-login">
-      <div className="login-card">
-        <div className="login-header">
-          <img src="/logo.png" alt="OGOP" className="login-logo" />
-          <h2>Admin Login</h2>
-          <p>One Girl One Promise</p>
+    <div className="min-h-screen flex items-center justify-center bg-[#003A99] px-4">
+      <div className="w-full max-w-md border border-[#E0E2E6] bg-white p-8">
+        <div className="text-center mb-8">
+          <div className="w-20 h-20 bg-[#003A99] mx-auto flex items-center justify-center mb-4">
+            <span className="text-white font-bold text-2xl">OGOP</span>
+          </div>
+          <h2 className="text-2xl font-bold text-[#1A1A1A]">Admin Login</h2>
+          <p className="text-[#4A4F59] text-sm mt-1">One Girl One Promise</p>
         </div>
         
-        <form onSubmit={handleLogin}>
-          <div className="form-group">
-            <input
-              type="text"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <div className="flex items-center border border-[#E0E2E6] focus-within:border-[#003A99] transition-colors">
+              <Mail className="w-5 h-5 text-[#4A4F59] ml-3 flex-shrink-0" />
+              <input
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                className="w-full px-3 py-3 outline-none bg-transparent"
+              />
+            </div>
           </div>
           
-          <div className="form-group">
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+          <div className="mb-6">
+            <div className="flex items-center border border-[#E0E2E6] focus-within:border-[#003A99] transition-colors">
+              <Lock className="w-5 h-5 text-[#4A4F59] ml-3 flex-shrink-0" />
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full px-3 py-3 outline-none bg-transparent"
+              />
+            </div>
           </div>
           
-          {error && <div className="error-message">{error}</div>}
+          {error && (
+            <div className="bg-[#E31E24] text-white px-4 py-2 mb-4 text-center text-sm">
+              {error}
+            </div>
+          )}
           
-          <button type="submit" disabled={loading}>
+          <button 
+            type="submit" 
+            disabled={loading}
+            className="w-full bg-[#1A7F00] text-white py-3 font-bold hover:bg-[#136000] transition-colors disabled:opacity-50"
+          >
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
       </div>
-
-      <style jsx>{`
-        .admin-login {
-          min-height: 100vh;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: linear-gradient(135deg, #E91E63, #9C27B0);
-        }
-        .login-card {
-          background: white;
-          padding: 40px;
-          border-radius: 10px;
-          width: 100%;
-          max-width: 400px;
-          box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-        }
-        .login-header {
-          text-align: center;
-          margin-bottom: 30px;
-        }
-        .login-logo {
-          width: 80px;
-          margin-bottom: 15px;
-        }
-        .login-header h2 {
-          color: #E91E63;
-          margin-bottom: 5px;
-        }
-        .form-group {
-          margin-bottom: 20px;
-        }
-        .form-group input {
-          width: 100%;
-          padding: 12px;
-          border: 1px solid #ddd;
-          border-radius: 5px;
-          font-size: 16px;
-        }
-        button {
-          width: 100%;
-          padding: 12px;
-          background: #E91E63;
-          color: white;
-          border: none;
-          border-radius: 5px;
-          font-size: 16px;
-          cursor: pointer;
-        }
-        button:hover {
-          background: #C2185B;
-        }
-        .error-message {
-          background: #ffebee;
-          color: #c62828;
-          padding: 10px;
-          border-radius: 5px;
-          margin-bottom: 20px;
-          text-align: center;
-        }
-      `}</style>
     </div>
   )
 }
