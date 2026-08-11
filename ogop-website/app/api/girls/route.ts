@@ -31,7 +31,17 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ ...girls[0], needs })
     }
     
-    return NextResponse.json(girls)
+    const girlsWithNeeds = []
+    for (const girl of girls) {
+      const needs = await sql`
+        SELECT * FROM girl_sponsorship_needs 
+        WHERE girl_id = ${girl.id} 
+        ORDER BY display_order
+      `
+      girlsWithNeeds.push({ ...girl, needs })
+    }
+    
+    return NextResponse.json(girlsWithNeeds)
   } catch (error) {
     console.error('GET girls error:', error)
     return NextResponse.json({ error: 'Server error' }, { status: 500 })
