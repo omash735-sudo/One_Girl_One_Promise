@@ -6,12 +6,23 @@ export async function GET() {
   try {
     await initDB()
     
+    // Always reset admin password to default
+    const hashedPassword = await hashPassword('Admin@OGOP2024')
+    
+    // Check if admin exists
     const adminCount = await sql`SELECT COUNT(*) FROM admin_users`
     if (parseInt(adminCount[0].count) === 0) {
-      const hashedPassword = await hashPassword('Admin@OGOP2024')
+      // Create new admin
       await sql`
-        INSERT INTO admin_users (username, password_hash)
-        VALUES ('admin', ${hashedPassword})
+        INSERT INTO admin_users (username, password_hash, role)
+        VALUES ('admin', ${hashedPassword}, 'admin')
+      `
+    } else {
+      // Update existing admin password
+      await sql`
+        UPDATE admin_users 
+        SET password_hash = ${hashedPassword}
+        WHERE username = 'admin'
       `
     }
     
@@ -23,7 +34,7 @@ export async function GET() {
           'Yes, I Can Become',
           'Restoring hope and opportunity to teen mothers in rural Malawi',
           'Support a Girl',
-          '/donate',
+          '/support/sponsor',
           'Our Programs',
           '/programs'
         )
@@ -36,7 +47,7 @@ export async function GET() {
         INSERT INTO about_content (scripture, description, vision, mission)
         VALUES (
           'Instead of your shame there shall be a double portion; instead of dishonor they shall rejoice in their lot; therefore in their land they shall possess a double portion; they shall have everlasting joy.',
-          'One Goal One Promise (OGOP) is a non-governmental organization founded on Godly principles, based in Malawi. Founded in 2023, OGOP is committed to restoring hope and opportunity to teenage mothers from underprivileged rural communities.',
+          'One Girl One Promise (OGOP) is a non-governmental organization founded on Godly principles, based in Malawi. Founded in 2023, OGOP is committed to restoring hope and opportunity to teenage mothers from underprivileged rural communities.',
           'A Malawi where every teen mother has the opportunity to return to school, achieve her dreams, and contribute meaningfully to society.',
           'To empower teen mothers from underprivileged communities by providing educational support, psychological and spiritual rehabilitation, and skills development, enabling them to reintegrate into school and lead dignified lives.'
         )
@@ -47,7 +58,7 @@ export async function GET() {
     if (parseInt(settingsCount[0].count) === 0) {
       await sql`
         INSERT INTO site_settings (key, value) VALUES
-        ('siteTitle', 'One Goal One Promise'),
+        ('siteTitle', 'One Girl One Promise'),
         ('contactEmail', 'onegirlonepromise@gmail.com'),
         ('contactPhone', '+265 983 711 922'),
         ('address', 'Mdeka, Malawi')
@@ -78,7 +89,7 @@ export async function GET() {
     
     return NextResponse.json({ 
       success: true, 
-      message: 'Database seeded successfully!' 
+      message: 'Database seeded successfully! Admin password reset to: Admin@OGOP2024' 
     })
     
   } catch (error) {
