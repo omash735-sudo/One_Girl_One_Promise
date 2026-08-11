@@ -2,7 +2,15 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Megaphone, CheckCircle, Loader2 } from 'lucide-react'
+import { 
+  ArrowLeft, 
+  Megaphone, 
+  CheckCircle, 
+  Loader2,
+  Target,
+  Users,
+  Award
+} from 'lucide-react'
 
 export default function FundraisePage() {
   const [formData, setFormData] = useState({
@@ -106,17 +114,17 @@ export default function FundraisePage() {
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="border border-[#E0E2E6] p-6 bg-[#F8F9FA] text-center">
-              <div className="text-4xl mb-2">🎯</div>
+              <Target className="w-12 h-12 text-[#003A99] mx-auto mb-2" />
               <h3 className="font-bold text-[#1A1A1A]">1. Plan</h3>
               <p className="text-sm text-[#4A4F59]">Decide on your fundraiser type, goal, and timeline</p>
             </div>
             <div className="border border-[#E0E2E6] p-6 bg-[#F8F9FA] text-center">
-              <div className="text-4xl mb-2">👥</div>
+              <Users className="w-12 h-12 text-[#1A7F00] mx-auto mb-2" />
               <h3 className="font-bold text-[#1A1A1A]">2. Launch</h3>
               <p className="text-sm text-[#4A4F59]">Share your campaign with your community and networks</p>
             </div>
             <div className="border border-[#E0E2E6] p-6 bg-[#F8F9FA] text-center">
-              <div className="text-4xl mb-2">✅</div>
+              <Award className="w-12 h-12 text-[#003A99] mx-auto mb-2" />
               <h3 className="font-bold text-[#1A1A1A]">3. Impact</h3>
               <p className="text-sm text-[#4A4F59]">OGOP receives funds and transforms lives</p>
             </div>
