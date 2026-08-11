@@ -11,6 +11,7 @@ import {
   Mail, 
   LogOut,
   HeartHandshake,
+  Heart,
   Package,
   Megaphone,
   GraduationCap,
