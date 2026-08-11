@@ -2,7 +2,15 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, CalendarHeart, CheckCircle, Loader2 } from 'lucide-react'
+import { 
+  ArrowLeft, 
+  CalendarHeart, 
+  CheckCircle, 
+  Loader2,
+  ClipboardList,
+  Shield,
+  Users
+} from 'lucide-react'
 
 export default function MonthlyPage() {
   const [selectedAmount, setSelectedAmount] = useState<string>('25')
@@ -93,17 +101,17 @@ export default function MonthlyPage() {
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="border border-[#E0E2E6] p-6 bg-[#F8F9FA] text-center">
-              <div className="text-4xl mb-2">📋</div>
+              <ClipboardList className="w-12 h-12 text-[#003A99] mx-auto mb-2" />
               <h3 className="font-bold text-[#1A1A1A]">Predictable Support</h3>
               <p className="text-sm text-[#4A4F59]">Allows OGOP to plan programs and budget effectively</p>
             </div>
             <div className="border border-[#E0E2E6] p-6 bg-[#F8F9FA] text-center">
-              <div className="text-4xl mb-2">💪</div>
+              <Shield className="w-12 h-12 text-[#1A7F00] mx-auto mb-2" />
               <h3 className="font-bold text-[#1A1A1A]">Sustained Impact</h3>
               <p className="text-sm text-[#4A4F59]">Provides ongoing support for girls throughout their education</p>
             </div>
             <div className="border border-[#E0E2E6] p-6 bg-[#F8F9FA] text-center">
-              <div className="text-4xl mb-2">🤝</div>
+              <Users className="w-12 h-12 text-[#003A99] mx-auto mb-2" />
               <h3 className="font-bold text-[#1A1A1A]">Community Building</h3>
               <p className="text-sm text-[#4A4F59]">Join a committed group of supporters making a lasting difference</p>
             </div>
